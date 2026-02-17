@@ -416,7 +416,7 @@ This project is licensed under the **MIT License** - see the <LICENSE> file for 
 - **Issues:** [GitHub Issues](https://github.com/inboxBodyguard/codeguard-copilot/issues)
 - **Discussions:** [GitHub Discussions](https://github.com/inboxBodyguard/codeguard-copilot/discussions)
 - **Email:** Ezmcyber@zohomail.com
-- **Twitter:** [@niffy_hunt](https://twitter.com/niffy_hunt21)
+- **Twitter:** [@niffy_hunt](https://twitter.com/niffy_hunt)
 
 -----
 
