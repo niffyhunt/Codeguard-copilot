@@ -79,7 +79,7 @@ Think of it as **“Grammarly for secure code”** - your personal security co-p
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/inboxBodyguard/codeguard-copilot.git
+git clone https://github.com/niffyhunt/codeguard-copilot.git
 cd codeguard-copilot
 ```
 
@@ -413,8 +413,8 @@ This project is licensed under the **MIT License** - see the <LICENSE> file for 
 
 ## 📧 Contact & Support
 
-- **Issues:** [GitHub Issues](https://github.com/inboxBodyguard/codeguard-copilot/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/inboxBodyguard/codeguard-copilot/discussions)
+- **Issues:** [GitHub Issues](https://github.com/niffyhunt/codeguard-copilot/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/niffyhunt/codeguard-copilot/discussions)
 - **Email:** Ezmcyber@zohomail.com
 - **Twitter:** [@niffy_hunt](https://twitter.com/niffy_hunt)
 
