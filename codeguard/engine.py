@@ -33,14 +33,26 @@ class Finding:
         self.analyzer = analyzer
 
     def to_dict(self):
+        from .intelligence import generate_intelligent_explanation as _explain
+        explanation = _explain({
+            "rule_id": self.rule_id, "severity": self.severity, "cwe": self.cwe,
+            "file_path": self.file_path, "line": self.line,
+            "analyzer": self.analyzer, "source": self.source, "sink": self.sink,
+            "fix": self.fix, "confidence": self.confidence,
+        })
         return {
             "rule_id": self.rule_id, "severity": self.severity,
             "file_path": self.file_path, "line": self.line,
             "column": self.column, "length": self.length,
-            "message": self.message, "explanation": self.explanation,
+            "message": self.message, "explanation": explanation,
             "fix": self.fix, "cwe": self.cwe, "confidence": self.confidence,
             "source": self.source, "sink": self.sink,
             "dataflow_path": self.dataflow_path, "analyzer": self.analyzer,
+            "intelligence": {
+                "method": "deterministic",
+                "source": "embedded_cwe_knowledge",
+                "requires_api": False,
+            }
         }
 
 
