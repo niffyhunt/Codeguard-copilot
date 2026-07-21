@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "codeguard"
-version = "0.2.0"
-description = "Security analysis engine — catches vulnerabilities before they ship. CLI, pre-commit, CI/CD, AI-powered, Raven-connected."
+name = "raven-guard"
+version = "0.2.1"
+description = "Security analysis engine — catches vulnerabilities before they ship. CLI, pre-commit, CI/CD, AI-powered, Raven-connected. (CodeGuard Copilot CLI — published as raven-guard on PyPI)"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [{name = "Niffy Hunt", email = "ezmcyber@zohomail.com"}]
@@ -35,7 +35,7 @@ Documentation = "https://github.com/niffyhunt/codeguard-copilot#readme"
 Issues = "https://github.com/niffyhunt/codeguard-copilot/issues"
 
 [project.scripts]
-codeguard = "codeguard.cli:main"
+raven-guard = "codeguard.cli:main"
 
 [tool.setuptools]
 packages = ["codeguard"]
