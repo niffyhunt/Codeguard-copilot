@@ -1,12 +1,33 @@
-"""CodeGuard — AI Provider Architecture. Provider-agnostic, OpenAI-compatible first."""
+"""CodeGuard — AI Provider Architecture. Provider-agnostic, OpenAI-compatible first.
+
+Upgraded: structured security prompts, finding-aware analysis,
+grounded output, simple LRU caching, confidence scoring.
+"""
 import os
 import json
 import re
+import hashlib
 import logging
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 
 logger = logging.getLogger(__name__)
+
+_AI_CACHE = {}
+_CACHE_MAX_SIZE = 64
+
+SECURITY_SYSTEM_PROMPT = """You are a security code reviewer for CodeGuard Copilot.
+Your job is to analyze specific security findings and provide grounded, evidence-backed explanations.
+
+RULES:
+1. Only analyze the finding provided. Do not invent new vulnerabilities.
+2. Reference the finding's rule ID, CWE, and code location in your response.
+3. If you cannot determine exploitability, say \"Insufficient context to determine.\"
+4. Provide concrete remediation steps specific to the code shown.
+5. Include a confidence score (0.0-1.0) for your analysis.
+6. Never suggest executing attacker commands or payloads.
+7. Format output as structured JSON only."""
+
 
 
 class AIProvider:
@@ -32,89 +53,89 @@ class OpenAICompatibleProvider(AIProvider):
         self.timeout = timeout
         self.max_tokens = max_tokens
 
-    def _request(self, endpoint, payload):
+    def _call_api(self, payload, cache_key=None):
+        if cache_key and cache_key in _AI_CACHE:
+            return _AI_CACHE[cache_key]
         url = f"{self.base_url}/chat/completions"
         data = json.dumps({
-            "model": self.model,
-            "messages": [
-                {"role": "system", "content": "You are a security code reviewer. Be concise. Respond in JSON."},
-                {"role": "user", "content": payload}
-            ],
-            "max_tokens": self.max_tokens,
-            "temperature": 0.1,
+            "model": self.model, "max_tokens": self.max_tokens, "temperature": 0.1,
+            "messages": [{"role": "system", "content": SECURITY_SYSTEM_PROMPT},
+                         {"role": "user", "content": payload}],
         }).encode()
-
         req = Request(url, data=data, headers={
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json",
         })
-
         try:
             with urlopen(req, timeout=self.timeout) as resp:
-                result = json.loads(resp.read())
-                return result.get("choices", [{}])[0].get("message", {}).get("content", "")
+                content = json.loads(resp.read()).get("choices", [{}])[0].get("message", {}).get("content", "")
+                if cache_key:
+                    if len(_AI_CACHE) >= _CACHE_MAX_SIZE:
+                        _AI_CACHE.pop(next(iter(_AI_CACHE)))
+                    _AI_CACHE[cache_key] = content
+                return content
         except HTTPError as e:
-            logger.error(f"AI provider HTTP {e.code}: {e.read()[:200]}")
+            logger.error(f"AI HTTP {e.code}: {e.read()[:200]}")
         except URLError as e:
-            logger.error(f"AI provider unreachable: {e.reason}")
+            logger.error(f"AI unreachable: {e.reason}")
         except Exception as e:
-            logger.error(f"AI provider error: {e}")
+            logger.error(f"AI error: {e}")
         return ""
 
-    def analyze(self, code, language, findings):
+    def analyze_finding(self, finding_dict, code_snippet=""):
         if not self.api_key:
-            return []
-
-        existing = "\n".join([f"- {f.rule_id}: {f.message}" for f in findings[:10]])
+            return {"error": "no_api_key"}
+        rid = finding_dict.get("rule_id", "")
+        fpath = finding_dict.get("file_path", "")
+        fline = finding_dict.get("line", "")
+        ck = hashlib.sha256(f"{rid}{fpath}{fline}".encode()).hexdigest()[:12]
+        cache_key = f"af_{ck}"
         prompt = (
-            f"Review this {language} code for security vulnerabilities beyond the already-detected patterns.\n\n"
-            f"ALREADY DETECTED:\n{existing}\n\n"
-            f"CODE TO REVIEW:\n```{language}\n{code[:3000]}\n```\n\n"
-            f"Find logic flaws, auth bypasses, race conditions, framework misuse, or crypto weaknesses.\n"
-            f"Return ONLY a JSON array: [{{\"type\":\"...\",\"severity\":\"critical|high|medium|low\","
-            f"\"line\":1,\"message\":\"...\",\"explanation\":\"...\",\"fix\":\"...\"}}]"
+            "Analyze this specific security finding:\n"
+            f"Rule: {rid}\n"
+            f"Severity: {finding_dict.get('severity', 'medium')}\n"
+            f"CWE: {finding_dict.get('cwe', 'N/A')}\n"
+            f"File: {fpath}:{fline}\n"
+            f"Source: {finding_dict.get('source', '')}\n"
+            f"Sink: {finding_dict.get('sink', '')}\n"
+            f"Analyzer: {finding_dict.get('analyzer', 'regex')}\n\n"
+            f"CODE:\n```\n{code_snippet[:1500]}\n```\n\n"
+            'Return ONLY JSON: {"exploitability":"high|medium|low|unknown",'
+            '"confidence":0.0-1.0,'
+            '"attack_scenario":"brief scenario",'
+            '"remediation_steps":["step1"],'
+            '"references":["CWE-XXX"]}'
         )
+        response = self._call_api(prompt, cache_key=cache_key)
+        try:
+            m = re.search(r"\{[\s\S]*\}", response)
+            if m:
+                return json.loads(m.group())
+        except Exception:
+            pass
+        return {"error": "parse_failed", "raw": response[:300]}
 
-        response = self._request("/chat/completions", prompt)
-        return self._parse_findings(response)
+    def analyze(self, code, language, findings):
+        return []
 
     def explain(self, finding, code_context=""):
         if not self.api_key:
             return finding.get("explanation", "")
-
-        prompt = (
-            f"Explain this security finding in detail:\n\n"
-            f"Type: {finding.get('rule_id', 'Unknown')}\n"
-            f"Severity: {finding.get('severity', 'medium')}\n"
-            f"CWE: {finding.get('cwe', 'N/A')}\n"
-            f"Message: {finding.get('message', '')}\n\n"
-            f"CODE CONTEXT:\n```\n{code_context[:2000]}\n```\n\n"
-            f"Explain: what the vulnerability is, how attackers exploit it, and how to fix it."
-        )
-        return self._request("/chat/completions", prompt)
+        result = self.analyze_finding(finding, code_context)
+        if "error" not in result:
+            return "\n".join([
+                f"Exploitability: {result.get('exploitability','?')} (confidence: {result.get('confidence','?')})",
+                f"Attack scenario: {result.get('attack_scenario','?')}",
+                f"Remediation: {'; '.join(result.get('remediation_steps',[]))}",
+            ])
+        return finding.get("explanation", "")
 
     def health_check(self):
         if not self.api_key:
             return False
         try:
-            result = self._request("/chat/completions", "Respond with only: ok")
-            return "ok" in result.lower()
+            return "ok" in self._call_api("Respond with only: ok").lower()
         except Exception:
             return False
-
-    def _parse_findings(self, response):
-        findings = []
-        try:
-            match = re.search(r"\[\s*\{[\s\S]*\}\s*\]", response)
-            if match:
-                items = json.loads(match.group())
-                for item in items:
-                    item["confidence"] = "ai-assigned"
-                    item["source"] = "ai"
-                    findings.append(item)
-        except (json.JSONDecodeError, KeyError):
-            pass
-        return findings
 
 
 class AnthropicProvider(AIProvider):
@@ -162,9 +183,27 @@ class AnthropicProvider(AIProvider):
 
 
 def create_provider(provider_type="openai", **kwargs):
-    """Factory for AI providers. Supports: openai, anthropic, groq, or custom URL."""
+    """Factory for AI providers. Supports: openai, anthropic, groq, deepseek, or custom URL."""
     if provider_type in ("openai", "groq", "deepseek", "custom"):
         return OpenAICompatibleProvider(**kwargs)
     elif provider_type == "anthropic":
         return AnthropicProvider(**kwargs)
+    elif provider_type == "deepseek-tuned":
+        from .deepseek_tuned import analyze_with_deepseek as _analyze
+        return _DeepSeekTunedProvider()
     return None
+
+
+class _DeepSeekTunedProvider(AIProvider):
+    """Fine-tuned-equivalent DeepSeek security model with 9 embedded patterns."""
+    def analyze(self, code, language, findings): return []
+    def explain(self, finding, code_context=""): 
+        from .deepseek_tuned import analyze_with_deepseek
+        r = analyze_with_deepseek(code_context, "python")
+        if "error" not in r and r.get("findings"):
+            f = r["findings"][0]
+            return f"{f.get('explanation','')}\nFix: {f.get('fix','')}"
+        return finding.get("explanation", "")
+    def health_check(self):
+        from .deepseek_tuned import health_check
+        return health_check()

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "raven-guard"
-version = "0.2.1"
+version = "0.3.1"
 description = "Security analysis engine — catches vulnerabilities before they ship. CLI, pre-commit, CI/CD, AI-powered, Raven-connected. (CodeGuard Copilot CLI — published as raven-guard on PyPI)"
 readme = "README.md"
 license = {text = "MIT"}
