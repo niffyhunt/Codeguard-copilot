@@ -1,0 +1,39 @@
+name: CodeGuard Python CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  scan:
+    name: Self-Scan with CodeGuard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -e .
+      - run: codeguard scan . --format sarif --output codeguard-results.sarif --fail-on high
+        continue-on-error: true
+      - uses: github/codeql-action/upload-sarif@v3
+        with: {sarif_file: codeguard-results.sarif}
+        continue-on-error: true
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '${{ matrix.python-version }}'}
+      - run: pip install -e .
+      - run: python -c "from codeguard.engine import CodeGuardEngine; e = CodeGuardEngine(); assert e.get_pattern_count() == 32"
+      - run: codeguard version
+      - run: codeguard scan codeguard/ --format json
+      - run: codeguard doctor

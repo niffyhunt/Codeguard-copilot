@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+"""CodeGuard pre-commit hook. Install: cp hooks/pre-commit .git/hooks/pre-commit"""
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from codeguard.engine import CodeGuardEngine
+
+engine = CodeGuardEngine()
+
+# Only scan staged/changed Python files for speed
+import subprocess
+try:
+    result = subprocess.run(
+        ["git", "diff", "--cached", "--name-only", "--diff-filter=ACM"],
+        capture_output=True, text=True
+    )
+    changed = [f for f in result.stdout.strip().split("\n") if f and f.endswith(('.py', '.js', '.ts', '.java', '.go', '.rs', '.cs', '.rb', '.php'))]
+except Exception:
+    changed = []
+
+if not changed:
+    print("CodeGuard: No changed files to scan.")
+    sys.exit(0)
+
+findings = []
+for f in changed:
+    if os.path.exists(f):
+        findings.extend(engine.scan_file(f, severity_filter=["critical", "high"]))
+
+if findings:
+    print(f"\n  CodeGuard: {len(findings)} high/critical finding(s) in staged files:\n")
+    for f in findings:
+        print(f"  [{f.severity.upper()}] {f.file_path}:{f.line} — {f.message}")
+    print(f"\n  Fix these before committing or use --no-verify to bypass.\n")
+    sys.exit(1)
+
+print(f"CodeGuard: {len(changed)} file(s) scanned — no issues.")
+sys.exit(0)

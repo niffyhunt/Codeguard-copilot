@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codeguard"
+version = "0.2.0"
+description = "Security analysis engine — catches vulnerabilities before they ship. CLI, pre-commit, CI/CD, AI-powered, Raven-connected."
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Niffy Hunt", email = "ezmcyber@zohomail.com"}]
+keywords = ["security", "vulnerability", "scanner", "SAST", "code-analysis", "devsecops", "pre-commit", "cli"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+ai = ["requests"]
+all = ["requests"]
+
+[project.urls]
+Homepage = "https://github.com/niffyhunt/codeguard-copilot"
+Documentation = "https://github.com/niffyhunt/codeguard-copilot#readme"
+Issues = "https://github.com/niffyhunt/codeguard-copilot/issues"
+
+[project.scripts]
+codeguard = "codeguard.cli:main"
+
+[tool.setuptools]
+packages = ["codeguard"]
+
+[tool.setuptools.package-data]
+codeguard = ["patterns.json", "patterns/*.json"]

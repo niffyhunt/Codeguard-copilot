@@ -1,0 +1,11 @@
+repos:
+  - repo: local
+    hooks:
+      - id: codeguard
+        name: CodeGuard Security Scan
+        entry: codeguard scan
+        args: [--severity, critical, high, --fail-on, high]
+        language: system
+        types: [python, javascript, typescript, java, go, rust, c, php, ruby]
+        pass_filenames: false
+        always_run: false
