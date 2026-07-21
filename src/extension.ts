@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import { SecurityScanner } from './patterns/securityScanner';
 import { AISecurityEngine } from './ai/aiEngine';
-import { SecurityDiagnostics } from './ui/diagnostics';
-import { SecurityQuickFixProvider, registerExplainCommand } from './ui/quickFix';
+import { SecurityDiagnostics } from './Ui/diagnostics';
+import { SecurityQuickFixProvider, registerExplainCommand } from './Ui/quickFix';
 
 let diagnosticCollection: vscode.DiagnosticCollection;
 let securityScanner: SecurityScanner;

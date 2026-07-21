@@ -7,6 +7,7 @@
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.80+-007ACC.svg)
 ![Patterns](https://img.shields.io/badge/patterns-35+-orange.svg)
 ![Raven](https://img.shields.io/badge/Raven-integrated-red.svg)
+![Fine-tuned](https://img.shields.io/badge/finetuned-Qwen2.5--7B-purple.svg)
 
 **Your AI-Powered Security Guardian — Now Connected to Live Attacker Intelligence**
 
@@ -200,6 +201,30 @@ Ruby: SQL Injection, Command Injection, Mass Assignment, Unsafe YAML
 
 ---
 
+## Fine-Tuned Security Model (v0.3.1)
+
+CodeGuard's fine-tuned model (`Ezmcyber890/codeguard-security-7b`) is a LoRA adapter on **Qwen2.5-7B-Instruct** trained on 32 security vulnerability patterns across 8 categories:
+
+- **Mode 1 (default — HF Router API):** No GPU needed. Uses HuggingFace's fastest inference provider with a custom security system prompt.
+- **Mode 2 (local GPU — `CODEGUARD_LOCAL_MODEL=1`):** Loads the fine-tuned LoRA adapter with QLoRA 4-bit quantization. Requires ~5GB GPU VRAM.
+
+```bash
+# Local GPU inference
+CODEGUARD_LOCAL_MODEL=1 codeguard scan app.py
+
+# Or via Python
+CODEGUARD_LOCAL_MODEL=1 python3 -c "
+from codeguard import CodeGuardEngine
+engine = CodeGuardEngine(use_local_model=True)
+findings = engine.scan_file('app.py')
+print(findings)
+"
+```
+
+**Training dataset:** 16 safe/unsafe code pairs spanning SQLi, XSS, command injection, hardcoded secrets, weak crypto, deserialization, path traversal, open redirect. Four additional variants per pattern for robustness.
+
+---
+
 ## Installation
 
 ```bash
@@ -274,7 +299,15 @@ raven-guard doctor
 | **JetBrains IDE scaffolding** | **v0.2.0** |
 | VS Code Marketplace publication | Planned |
 | Telemetry dashboard | Planned |
-| Reachability analysis (AST) | Planned |
+| Reachability analysis (AST) | v0.3.1 |
+| Multi-language AST (JS/Go/Rust/Python) | v0.3.1 |
+| Fine-tuned Qwen2.5-7B (QLoRA, local GPU) | v0.3.1 |
+| Cross-repo systemic detection (threshold ≥2) | v0.3.1 |
+| Honeypot session classifier (100:1 scanner:threat) | v0.3.1 |
+| Multi-adapter → AttackEvent (Cowrie/Dionaea/HTTP) | v0.3.1 |
+| Tenant isolation (SQLite per-tenant, zero cross-read) | v0.3.1 |
+| HF Router API inference | Prod |
+| Local LoRA model inference (CODEGUARD_LOCAL_MODEL=1) | v0.3.1 |
 | Security drift detection | Research |
 
 ---
@@ -351,7 +384,7 @@ MIT — see LICENSE file.
 
 <div align="center">
 
-**CodeGuard Copilot v0.2.0 — Intelligent Security Ecosystem**
+**CodeGuard Copilot v0.3.1 — Intelligent Security Ecosystem**
 
 Connected to Raven · Powered by attacker intelligence · Built for developers
 

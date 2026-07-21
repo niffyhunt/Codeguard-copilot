@@ -6,7 +6,10 @@ All without duplicating scanning logic.
 import json
 import re
 import os
+import logging
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 PACKAGE_DIR = Path(__file__).parent
 PATTERNS_PATH = PACKAGE_DIR / "patterns.json"
@@ -57,12 +60,15 @@ class Finding:
 
 
 class CodeGuardEngine:
-    def __init__(self, patterns_path=None):
+    def __init__(self, patterns_path=None, use_local_model=None):
         self.patterns_path = patterns_path or PATTERNS_PATH
         self.patterns = []
         self.custom_patterns = []
         self._load_patterns()
         self._ast_enabled = True
+        if use_local_model is None:
+            use_local_model = os.environ.get("CODEGUARD_LOCAL_MODEL", "").lower() in ("1", "true", "yes")
+        self._use_local_model = use_local_model
 
     def _is_test_or_generated(self, file_path):
         path = file_path.lower().replace('\\', '/')
@@ -205,6 +211,30 @@ class CodeGuardEngine:
                 pass
             except Exception:
                 pass
+
+        # Layer 3: Fine-tuned model analysis (optional, gated by flag)
+        if self._use_local_model:
+            try:
+                from .tuned_model import analyze_security
+                result = analyze_security(code, language)
+                if result.get("findings"):
+                    for af in result["findings"]:
+                        findings.append(Finding(
+                            rule_id=af.get("type", "AI: Security Finding"),
+                            severity=af.get("severity", "high"),
+                            file_path=file_path, line=af.get("line", 0) or 1,
+                            column=1, length=0,
+                            message=af.get("explanation", "")[:120],
+                            explanation=af.get("explanation", ""),
+                            fix=af.get("fix", ""),
+                            cwe=af.get("cwe"),
+                            confidence=af.get("confidence", "medium"),
+                            analyzer="ai",
+                        ))
+            except ImportError:
+                pass
+            except Exception as e:
+                logger.debug(f"AI model analysis skipped: {e}")
 
         return self._deduplicate(findings)
 

@@ -70,12 +70,13 @@ export class PluginRegistry {
             ? pluginNames.map(n => this.plugins.get(n)).filter(Boolean)
             : [...this.plugins.values()];
 
-        for (const analyzer of analyzers) {
+        for (const a of analyzers) {
+            if (!a) continue;
             try {
-                const result = await analyzer.analyze(code, languageId);
+                const result = await a.analyze(code, languageId);
                 findings.push(...result);
             } catch (error) {
-                console.error(`Plugin ${analyzer.name} failed:`, error);
+                console.error(`Plugin ${a.name} failed:`, error);
             }
         }
 

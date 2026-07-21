@@ -56,7 +56,8 @@ export class CustomRulesLoader {
             const raw = await vscode.workspace.fs.readFile(configPath);
             const text = new TextDecoder().decode(raw);
             this.config = JSON.parse(text);
-            console.log(`📋 Loaded .codeguard.json: ${this.config.customPatterns?.length || 0} custom patterns`);
+            const count = this.config?.customPatterns?.length || 0;
+            console.log(`📋 Loaded .codeguard.json: ${count} custom patterns`);
             return this.config;
         } catch {
             return null;
