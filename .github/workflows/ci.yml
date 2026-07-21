@@ -33,5 +33,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -e .
-      - run: codeguard scan codeguard/ --format json
-      - run: codeguard doctor
+      - run: python -c "from codeguard.engine import CodeGuardEngine; e = CodeGuardEngine(); assert e.get_pattern_count() == 32"
+      - run: raven-guard version
+      - run: raven-guard scan codeguard/ --format json
+      - run: raven-guard doctor
