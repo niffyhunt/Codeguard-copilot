@@ -81,7 +81,7 @@ export class SecurityScanner {
 
     private shouldRunAIAnalysis(code: string, patternVulns: Vulnerability[]): boolean {
         const vscode = require('vscode');
-        const config = vscode.workspace.getConfiguration('securityCopilot');
+        const config = vscode.workspace.getConfiguration('codeguard');
         const aiEnabled = config.get('enableAI', true);
 
         if (!aiEnabled) return false;

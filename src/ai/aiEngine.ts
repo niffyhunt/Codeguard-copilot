@@ -7,7 +7,7 @@ export class AISecurityEngine {
     private apiEndpoint: string;
 
     constructor() {
-        const config = vscode.workspace.getConfiguration('securityCopilot');
+        const config = vscode.workspace.getConfiguration('codeguard');
         this.provider = config.get<'anthropic' | 'groq' | 'openai'>('aiProvider', 'anthropic');
         this.apiKey = config.get<string>('apiKey', process.env.ANTHROPIC_API_KEY || '') || '';
         this.apiEndpoint = this.getApiEndpoint();

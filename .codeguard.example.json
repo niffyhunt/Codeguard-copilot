@@ -1,0 +1,12 @@
+{
+  "version": "0.1.0",
+  "rules": [],
+  "suppressions": {},
+  "customPatterns": [],
+  "severityOverrides": {},
+  "excludedPaths": [],
+  "metadata": {
+    "description": "CodeGuard Copilot custom rules configuration",
+    "generatedBy": "CodeGuard Copilot"
+  }
+}

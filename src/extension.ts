@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { SecurityScanner } from './patterns/securityScanner';
 import { AISecurityEngine } from './ai/aiEngine';
 import { SecurityDiagnostics } from './ui/diagnostics';
-import { SecurityQuickFixProvider } from './ui/quickFix';
+import { SecurityQuickFixProvider, registerExplainCommand } from './ui/quickFix';
 
 let diagnosticCollection: vscode.DiagnosticCollection;
 let securityScanner: SecurityScanner;
@@ -21,7 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Command: Scan current file
     const scanFileCommand = vscode.commands.registerCommand(
-        'securityCopilot.scanFile',
+        'codeguard.scanFile',
         async () => {
             const editor = vscode.window.activeTextEditor;
             if (editor) {
@@ -35,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Command: Scan entire workspace
     const scanWorkspaceCommand = vscode.commands.registerCommand(
-        'securityCopilot.scanWorkspace',
+        'codeguard.scanWorkspace',
         async () => {
             const files = await vscode.workspace.findFiles('**/*.{js,ts,py,java,php}');
             let scanned = 0;
@@ -67,7 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Real-time scanning on document change
     const changeListener = vscode.workspace.onDidChangeTextDocument(async (event) => {
-        const config = vscode.workspace.getConfiguration('securityCopilot');
+        const config = vscode.workspace.getConfiguration('codeguard');
         const enableRealtime = config.get<boolean>('enableRealtime', true);
 
         if (!enableRealtime) return;
@@ -102,8 +102,11 @@ export function activate(context: vscode.ExtensionContext) {
     );
     statusBarItem.text = '$(shield) Security Co-pilot';
     statusBarItem.tooltip = 'Click to scan current file';
-    statusBarItem.command = 'securityCopilot.scanFile';
+    statusBarItem.command = 'codeguard.scanFile';
     statusBarItem.show();
+
+    // Register explain vulnerability command (webview panel)
+    registerExplainCommand(context);
 
     context.subscriptions.push(
         scanFileCommand,

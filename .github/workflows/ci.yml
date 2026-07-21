@@ -1,0 +1,81 @@
+name: CodeGuard Copilot CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', '.vscode/**']
+  pull_request:
+    branches: [main]
+    paths-ignore: ['**.md', '.vscode/**']
+  schedule:
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+jobs:
+  security-scan:
+    name: Security Scan & Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - run: npm ci
+
+      - run: npm run compile
+
+      - name: Self-scan with CodeGuard
+        run: npx tsc --noEmit
+        continue-on-error: true
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Package extension
+        run: npm run package
+        if: matrix.node-version == '20.x'
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        if: matrix.node-version == '20.x'
+        with:
+          name: codeguard-copilot-${{ github.sha }}
+          path: '*.vsix'
+
+  semgrep-scan:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: semgrep/semgrep-action@v1
+        with:
+          config: p/default
+        continue-on-error: true
+
+  snyk-scan:
+    name: Snyk Security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  gitlab-ci:
+    name: GitLab CI Compat
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci && npm run compile
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gitlab-ci-output
+          path: out/

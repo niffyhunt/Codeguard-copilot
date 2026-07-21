@@ -1,0 +1,17 @@
+# CodeGuard Copilot — GitLab CI/CD Integration
+# Add this to your .gitlab-ci.yml to scan every commit
+
+stages:
+  - security
+
+codeguard-scan:
+  stage: security
+  image: node:20
+  script:
+    - npm install -g codeguard-copilot
+    - codeguard scan --ci --format json --output codeguard-report.json
+  artifacts:
+    paths:
+      - codeguard-report.json
+    when: always
+  allow_failure: true

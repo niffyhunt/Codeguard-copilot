@@ -1,8 +1,8 @@
 {
     "name": "codeguard-copilot",
-    "displayName": "AI CodeGuard Co-pilot",
-    "description": "Real-time security vulnerability detection with AI-powered explanations - catches vulnerabilities as you code",
-    "version": "0.1.0",
+    "displayName": "CodeGuard Copilot — Intelligent Security Ecosystem",
+    "description": "Real-time security vulnerability detection powered by 50+ patterns, AI analysis, Raven attacker intelligence, and a learning pipeline — catches vulnerabilities as you code",
+    "version": "0.2.0",
     "publisher": "inboxbodyguard",
     "author": {
         "name": "Niffy Hunt",
@@ -13,7 +13,11 @@
         "type": "git",
         "url": "https://github.com/inboxBodyguard/codeguard-copilot"
     },
-    
+    "icon": "realtime-scanning.jpg",
+    "galleryBanner": {
+        "color": "#1b1626",
+        "theme": "dark"
+    },
     "engines": {
         "vscode": "^1.80.0"
     },
@@ -23,102 +27,81 @@
         "Other"
     ],
     "keywords": [
-        "security",
-        "vulnerability",
-        "scanner",
-        "AI",
-        "code-analysis",
-        "sql-injection",
-        "xss",
-        "security-scanner"
+        "security", "vulnerability", "scanner", "AI", "code-analysis",
+        "sql-injection", "xss", "security-scanner", "SAST", "CodeGuard",
+        "Raven", "attacker-intelligence", "cowrie", "honeypot",
+        "sast-tool", "code-review", "devsecops", "secure-coding"
     ],
-    "activationEvents": [
-        "onStartupFinished"
-    ],
+    "activationEvents": ["onStartupFinished"],
     "main": "./out/extension.js",
     "contributes": {
         "commands": [
-            {
-                "command": "codeguard.scanFile",
-                "title": "CodeGuard: Scan Current File",
-                "icon": "$(shield)"
-            },
-            {
-                "command": "codeguard.scanWorkspace",
-                "title": "CodeGuard: Scan Entire Workspace"
-            },
-            {
-                "command": "codeguard.explainVulnerability",
-                "title": "CodeGuard: Explain This Vulnerability"
-            }
+            {"command": "codeguard.scanFile", "title": "CodeGuard: Scan Current File"},
+            {"command": "codeguard.scanWorkspace", "title": "CodeGuard: Scan Entire Workspace"},
+            {"command": "codeguard.explainVulnerability", "title": "CodeGuard: Explain This Vulnerability"},
+            {"command": "codeguard.startTraining", "title": "CodeGuard: Security Training"},
+            {"command": "codeguard.showIntelligence", "title": "CodeGuard: Raven Intelligence"},
+            {"command": "codeguard.generateReport", "title": "CodeGuard: Generate Security Report"},
+            {"command": "codeguard.managePlugins", "title": "CodeGuard: Manage Plugins"}
         ],
         "keybindings": [
-            {
-                "command": "codeguard.scanFile",
-                "key": "ctrl+shift+s",
-                "mac": "cmd+shift+s",
-                "when": "editorTextFocus"
-            }
+            {"command": "codeguard.scanFile", "key": "ctrl+shift+s", "mac": "cmd+shift+s", "when": "editorTextFocus"}
         ],
         "menus": {
             "editor/context": [
-                {
-                    "command": "codeguard.scanFile",
-                    "group": "navigation",
-                    "when": "editorTextFocus"
-                }
+                {"command": "codeguard.scanFile", "group": "navigation", "when": "editorTextFocus"},
+                {"command": "codeguard.explainVulnerability", "group": "navigation", "when": "editorTextFocus"}
             ]
         },
         "configuration": {
-            "title": "CodeGuard Co-pilot",
+            "title": "CodeGuard Copilot",
             "properties": {
                 "codeguard.enableRealtime": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enable real-time scanning as you type"
+                    "type": "boolean", "default": true,
+                    "description": "Real-time scanning as you type"
                 },
                 "codeguard.scanDelay": {
-                    "type": "number",
-                    "default": 500,
-                    "description": "Delay in milliseconds before scanning after typing stops"
+                    "type": "number", "default": 500,
+                    "description": "Debounce delay before scan (ms)"
                 },
                 "codeguard.aiProvider": {
-                    "type": "string",
-                    "enum": ["anthropic", "groq", "openai"],
-                    "default": "groq",
-                    "description": "AI provider for deep security analysis"
+                    "type": "string", "enum": ["anthropic", "groq", "openai"],
+                    "default": "groq", "description": "AI provider for deep analysis"
                 },
                 "codeguard.apiKey": {
-                    "type": "string",
-                    "default": "",
+                    "type": "string", "default": "",
                     "description": "API key for AI provider"
                 },
                 "codeguard.enableAI": {
-                    "type": "boolean",
-                    "default": true,
+                    "type": "boolean", "default": true,
                     "description": "Enable AI-powered deep analysis"
                 },
                 "codeguard.severityFilter": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "enum": ["critical", "high", "medium", "low"]
-                    },
+                    "type": "array", "items": {"type": "string", "enum": ["critical", "high", "medium", "low"]},
                     "default": ["critical", "high", "medium", "low"],
                     "description": "Which severity levels to show"
+                },
+                "codeguard.enablePlugins": {
+                    "type": "boolean", "default": true,
+                    "description": "Enable custom plugins for additional analysis"
+                },
+                "codeguard.enableTraining": {
+                    "type": "boolean", "default": true,
+                    "description": "Enable security training modules"
+                },
+                "codeguard.ravenIntelligenceUrl": {
+                    "type": "string", "default": "",
+                    "description": "Raven intelligence API URL for attacker-informed prioritization"
+                },
+                "codeguard.sharedRulesUrl": {
+                    "type": "string", "default": "",
+                    "description": "URL for team-shared rule sets"
                 }
             }
         },
         "colors": [
-            {
-                "id": "codeguard.criticalHighlight",
-                "description": "Background color for critical vulnerabilities",
-                "defaults": {
-                    "dark": "#ff000033",
-                    "light": "#ff000022",
-                    "highContrast": "#ff000044"
-                }
-            }
+            {"id": "codeguard.criticalHighlight", "description": "Critical vulnerability highlight",
+             "defaults": {"dark": "#ff000033", "light": "#ff000022", "highContrast": "#ff000044"}}
         ]
     },
     "scripts": {
@@ -129,7 +112,9 @@
         "lint": "eslint src --ext ts",
         "test": "node ./out/test/runTest.js",
         "package": "vsce package",
-        "publish": "vsce publish"
+        "publish": "vsce publish",
+        "export:patterns": "node ./out/exportPatterns.js",
+        "export:jetbrains": "node ./out/exportJetBrains.js"
     },
     "devDependencies": {
         "@types/node": "^20.10.0",
