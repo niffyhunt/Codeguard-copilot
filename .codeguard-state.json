@@ -1,0 +1,549 @@
+{
+  "timestamp": "2026-07-21T16:21:06.726970",
+  "findings": [
+    {
+      "rule_id": "Command Injection",
+      "file_path": "./codeguard_finetune.py",
+      "line": 63,
+      "severity": "critical",
+      "cwe": "CWE-78",
+      "message": "Potential Command Injection vulnerability"
+    },
+    {
+      "rule_id": "Hardcoded Secret",
+      "file_path": "./codeguard_finetune.py",
+      "line": 59,
+      "severity": "critical",
+      "cwe": "CWE-798",
+      "message": "Hardcoded secret detected"
+    },
+    {
+      "rule_id": "Weak Password Storage",
+      "file_path": "./codeguard_finetune.py",
+      "line": 65,
+      "severity": "critical",
+      "cwe": "CWE-916",
+      "message": "Weak password hashing detected"
+    },
+    {
+      "rule_id": "Insecure Deserialization",
+      "file_path": "./codeguard_finetune.py",
+      "line": 66,
+      "severity": "critical",
+      "cwe": "CWE-502",
+      "message": "Insecure deserialization detected"
+    },
+    {
+      "rule_id": "SQL Injection",
+      "file_path": "./gaps_1to8.py",
+      "line": 103,
+      "severity": "critical",
+      "cwe": "CWE-89",
+      "message": "Potential SQL Injection vulnerability detected"
+    },
+    {
+      "rule_id": "Command Injection",
+      "file_path": "./gaps_1to8.py",
+      "line": 281,
+      "severity": "critical",
+      "cwe": "CWE-78",
+      "message": "Potential Command Injection vulnerability"
+    },
+    {
+      "rule_id": "Hardcoded Secret",
+      "file_path": "./gaps_1to8.py",
+      "line": 277,
+      "severity": "critical",
+      "cwe": "CWE-798",
+      "message": "Hardcoded secret detected"
+    },
+    {
+      "rule_id": "Weak Password Storage",
+      "file_path": "./gaps_1to8.py",
+      "line": 283,
+      "severity": "critical",
+      "cwe": "CWE-916",
+      "message": "Weak password hashing detected"
+    },
+    {
+      "rule_id": "Insecure Deserialization",
+      "file_path": "./gaps_1to8.py",
+      "line": 285,
+      "severity": "critical",
+      "cwe": "CWE-502",
+      "message": "Insecure deserialization detected"
+    },
+    {
+      "rule_id": "SQL Injection",
+      "file_path": "./src/training/mode.ts",
+      "line": 33,
+      "severity": "critical",
+      "cwe": "CWE-89",
+      "message": "Potential SQL Injection vulnerability detected"
+    },
+    {
+      "rule_id": "Hardcoded Secret",
+      "file_path": "./src/training/mode.ts",
+      "line": 58,
+      "severity": "critical",
+      "cwe": "CWE-798",
+      "message": "Hardcoded secret detected"
+    },
+    {
+      "rule_id": "SQL Injection",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 25,
+      "severity": "critical",
+      "cwe": "CWE-89",
+      "message": "Potential SQL Injection vulnerability detected"
+    },
+    {
+      "rule_id": "Command Injection",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 37,
+      "severity": "critical",
+      "cwe": "CWE-78",
+      "message": "Potential Command Injection vulnerability"
+    },
+    {
+      "rule_id": "NoSQL Injection",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 44,
+      "severity": "critical",
+      "cwe": "CWE-943",
+      "message": "Potential NoSQL Injection vulnerability"
+    },
+    {
+      "rule_id": "NoSQL Injection",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 49,
+      "severity": "critical",
+      "cwe": "CWE-943",
+      "message": "Potential NoSQL Injection vulnerability"
+    },
+    {
+      "rule_id": "Weak Password Storage",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 103,
+      "severity": "critical",
+      "cwe": "CWE-916",
+      "message": "Weak password hashing detected"
+    },
+    {
+      "rule_id": "Insecure Deserialization",
+      "file_path": "./codeguard/reachability.py",
+      "line": 53,
+      "severity": "critical",
+      "cwe": "CWE-502",
+      "message": "Insecure deserialization detected"
+    },
+    {
+      "rule_id": "Insecure Deserialization",
+      "file_path": "./codeguard/reachability.py",
+      "line": 54,
+      "severity": "critical",
+      "cwe": "CWE-502",
+      "message": "Insecure deserialization detected"
+    },
+    {
+      "rule_id": "Insecure Deserialization",
+      "file_path": "./codeguard/ast_analyzer.py",
+      "line": 71,
+      "severity": "critical",
+      "cwe": "CWE-502",
+      "message": "Insecure deserialization detected"
+    },
+    {
+      "rule_id": "Command Injection",
+      "file_path": "./codeguard/deepseek_tuned.py",
+      "line": 30,
+      "severity": "critical",
+      "cwe": "CWE-78",
+      "message": "Potential Command Injection vulnerability"
+    },
+    {
+      "rule_id": "Hardcoded Secret",
+      "file_path": "./codeguard/deepseek_tuned.py",
+      "line": 26,
+      "severity": "critical",
+      "cwe": "CWE-798",
+      "message": "Hardcoded secret detected"
+    },
+    {
+      "rule_id": "Weak Password Storage",
+      "file_path": "./codeguard/deepseek_tuned.py",
+      "line": 46,
+      "severity": "critical",
+      "cwe": "CWE-916",
+      "message": "Weak password hashing detected"
+    },
+    {
+      "rule_id": "Insecure Deserialization",
+      "file_path": "./codeguard/deepseek_tuned.py",
+      "line": 42,
+      "severity": "critical",
+      "cwe": "CWE-502",
+      "message": "Insecure deserialization detected"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./codeguard_finetune.py",
+      "line": 65,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./codeguard_finetune.py",
+      "line": 68,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./gaps_1to8.py",
+      "line": 283,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./gaps_1to8.py",
+      "line": 174,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./gaps_1to8.py",
+      "line": 175,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./gaps_1to8.py",
+      "line": 287,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./src/raven/bridge.ts",
+      "line": 11,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./src/raven/bridge.ts",
+      "line": 98,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./src/config/customRules.ts",
+      "line": 2,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./src/Ui/diagnostics.ts",
+      "line": 2,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./src/Ui/quickFix.ts",
+      "line": 2,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Cross-Site Scripting XSS",
+      "file_path": "./src/training/mode.ts",
+      "line": 88,
+      "severity": "high",
+      "cwe": "CWE-79",
+      "message": "Potential XSS vulnerability"
+    },
+    {
+      "rule_id": "Cross-Site Scripting XSS",
+      "file_path": "./src/training/mode.ts",
+      "line": 92,
+      "severity": "high",
+      "cwe": "CWE-79",
+      "message": "Potential XSS vulnerability"
+    },
+    {
+      "rule_id": "Cross-Site Scripting XSS",
+      "file_path": "./src/training/mode.ts",
+      "line": 101,
+      "severity": "high",
+      "cwe": "CWE-79",
+      "message": "Potential XSS vulnerability"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./src/ai/aiEngine.ts",
+      "line": 1,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./src/patterns/expandedPatterns.ts",
+      "line": 105,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./src/patterns/expandedPatterns.ts",
+      "line": 107,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./src/patterns/expandedPatterns.ts",
+      "line": 109,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./src/patterns/expandedPatterns.ts",
+      "line": 110,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./src/patterns/expandedPatterns.ts",
+      "line": 6,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./src/patterns/securityScanner.ts",
+      "line": 1,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Cross-Site Scripting XSS",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 59,
+      "severity": "high",
+      "cwe": "CWE-79",
+      "message": "Potential XSS vulnerability"
+    },
+    {
+      "rule_id": "Cross-Site Scripting XSS",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 64,
+      "severity": "high",
+      "cwe": "CWE-79",
+      "message": "Potential XSS vulnerability"
+    },
+    {
+      "rule_id": "Cross-Site Scripting XSS",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 234,
+      "severity": "high",
+      "cwe": "CWE-79",
+      "message": "Potential XSS vulnerability"
+    },
+    {
+      "rule_id": "Cross-Site Scripting XSS",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 236,
+      "severity": "high",
+      "cwe": "CWE-79",
+      "message": "Potential XSS vulnerability"
+    },
+    {
+      "rule_id": "Cross-Site Scripting XSS",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 238,
+      "severity": "high",
+      "cwe": "CWE-79",
+      "message": "Potential XSS vulnerability"
+    },
+    {
+      "rule_id": "Cross-Site Scripting XSS",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 241,
+      "severity": "high",
+      "cwe": "CWE-79",
+      "message": "Potential XSS vulnerability"
+    },
+    {
+      "rule_id": "DOM-based XSS",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 74,
+      "severity": "high",
+      "cwe": "CWE-79",
+      "message": "Potential DOM-based XSS"
+    },
+    {
+      "rule_id": "DOM-based XSS",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 76,
+      "severity": "high",
+      "cwe": "CWE-79",
+      "message": "Potential DOM-based XSS"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 98,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 101,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 103,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 118,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Arbitrary File Upload",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 150,
+      "severity": "high",
+      "cwe": "CWE-434",
+      "message": "Potential arbitrary file upload vulnerability"
+    },
+    {
+      "rule_id": "Arbitrary File Upload",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 152,
+      "severity": "high",
+      "cwe": "CWE-434",
+      "message": "Potential arbitrary file upload vulnerability"
+    },
+    {
+      "rule_id": "Arbitrary File Upload",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 154,
+      "severity": "high",
+      "cwe": "CWE-434",
+      "message": "Potential arbitrary file upload vulnerability"
+    },
+    {
+      "rule_id": "Arbitrary File Upload",
+      "file_path": "./src/patterns/vulnerabilityPatterns.ts",
+      "line": 155,
+      "severity": "high",
+      "cwe": "CWE-434",
+      "message": "Potential arbitrary file upload vulnerability"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./codeguard/treesitter_ast.py",
+      "line": 187,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./codeguard/deepseek_tuned.py",
+      "line": 46,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./codeguard/deepseek_tuned.py",
+      "line": 47,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./codeguard/deepseek_tuned.py",
+      "line": 38,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./codeguard/deepseek_tuned.py",
+      "line": 39,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./codeguard/intelligence.py",
+      "line": 62,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Weak Cryptographic Algorithm",
+      "file_path": "./codeguard/intelligence.py",
+      "line": 64,
+      "severity": "high",
+      "cwe": "CWE-327",
+      "message": "Weak cryptographic algorithm used"
+    },
+    {
+      "rule_id": "Path Traversal",
+      "file_path": "./codeguard/intelligence.py",
+      "line": 48,
+      "severity": "high",
+      "cwe": "CWE-22",
+      "message": "Potential path traversal vulnerability"
+    }
+  ]
+}

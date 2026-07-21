@@ -7,7 +7,7 @@ Usage:
     findings = engine.scan_directory("./my-project")
 """
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 __all__ = ["CodeGuardEngine", "Finding", "__version__"]
 
 from .engine import CodeGuardEngine, Finding
