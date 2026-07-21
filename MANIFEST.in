@@ -1,0 +1,4 @@
+include README.md
+include patterns.json
+recursive-include codeguard *.py
+recursive-include codeguard *.json
