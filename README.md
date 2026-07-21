@@ -210,6 +210,16 @@ npm run compile
 # Press F5 in VS Code to launch Extension Development Host
 ```
 
+### Python CLI (PyPI: raven-guard)
+
+```bash
+pip install raven-guard
+raven-guard scan .
+raven-guard scan app.py --severity critical,high
+raven-guard scan . --format sarif --output results.sarif
+raven-guard doctor
+```
+
 ### Configuration
 
 ```json
