@@ -1,431 +1,348 @@
-# 🛡️ Codeguard Copilot
+# CodeGuard Copilot — Intelligent Security Ecosystem
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-0.2.0-purple.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.80+-007ACC.svg)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6.svg)
+![Patterns](https://img.shields.io/badge/patterns-35+-orange.svg)
+![Raven](https://img.shields.io/badge/Raven-integrated-red.svg)
 
-**Your AI-Powered Security Guardian for Writing Secure Code**
+**Your AI-Powered Security Guardian — Now Connected to Live Attacker Intelligence**
 
-Catch vulnerabilities as you code - like Grammarly, but for security mistakes.
-
-[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Demo](#-demo)
+[Features](#-features) • [Architecture](#-architecture) • [Raven Integration](#-raven-intelligence-bridge) • [Installation](#-installation) • [Roadmap](#-implementation-status) • [Contributing](#-contributing)
 
 </div>
 
------
+---
 
-## 🎯 What is Codeguard Copilot?
+## What is CodeGuard Copilot?
 
-Codeguard Copilot is a VS Code extension that **proactively prevents security vulnerabilities** during development, not after. While GitHub Copilot helps you write code faster, Codeguard Copilot ensures that code is secure from the start.
+CodeGuard Copilot catches security vulnerabilities **as you code**, not after you commit. It combines deterministic regex pattern detection with AI-powered deep analysis and live attacker intelligence from the Raven/WraithWall ecosystem to give you context no other VS Code security extension can.
 
-Unlike traditional security scanners that run after you commit, Codeguard Copilot:
+**What makes it different:**
+- **50+ vulnerability patterns** across JavaScript, TypeScript, Python, Java, PHP, Go, Rust, C++, C#, Ruby
+- **Raven Intelligence Bridge** — attacker behavior from live honeypots informs which vulnerabilities matter most
+- **Security Knowledge Graph** — connects findings to CWEs, MITRE techniques, attacker behavior, and remediation
+- **AI Security Rule Generation** — learns new detection patterns from real-world exploit data
+- **Interactive Security Training** — learn WHY code is vulnerable, not just THAT it is
 
-- ✅ **Catches mistakes in real-time** as you type
-- ✅ **Explains risks in plain English** so you learn security principles
-- ✅ **Suggests secure alternatives** with one-click fixes
-- ✅ **Educates developers** instead of just flagging issues
-- ✅ **Integrates seamlessly** into your coding workflow
+---
 
-Think of it as **“Grammarly for secure code”** - your personal security co-pilot that helps you write safer code from day one.
+## Features
 
------
+### Real-Time Detection (Phase 1)
 
-## ✨ Features
+- Scans as you type with configurable debounce (default 500ms)
+- 35+ built-in vulnerability patterns (17 core + 18 expanded)
+- Multi-language: JS, TS, Python, Java, PHP, Go, Rust, C++, C#, Ruby
+- Pattern-based detection (<10ms response)
+- Workspace-wide scanning with progress tracking
 
-### 🔍 **Real-Time Vulnerability Detection**
-
-- Scans code as you write - instant feedback
-- Detects 20+ vulnerability types including SQL injection, XSS, hardcoded secrets
-- Pattern-based detection (fast, <10ms response)
-- Multi-language support: JavaScript, TypeScript, Python, Java, PHP
-
-### 🤖 **AI-Powered Deep Analysis**
+### AI-Powered Deep Analysis (Phase 1)
 
 - Context-aware security analysis using Claude, GPT-4, or Groq
-- Identifies logic flaws and business logic vulnerabilities
-- Framework-specific security recommendations
-- Smart detection of complex security patterns
+- Identifies logic flaws, business logic vulnerabilities, and framework anti-patterns
+- Configurable AI provider and API key
+- Daily usage budget (guard against API costs)
 
-### 📚 **Educational Security Insights**
+### Custom Rules & Plugins (Phase D)
 
-- **“Why is this dangerous?”** - Clear explanations of security risks
-- **“How attackers exploit this”** - Real-world attack scenarios
-- **“The secure way to do this”** - Concrete fixes with code examples
-- CWE references linked to MITRE documentation
+- `.codeguard.json` custom rule configuration — regex, severity, CWE, per-file
+- Plugin system for custom analyzers (SecurityAnalyzer interface)
+- Shared rule sets for team collaboration
+- Rule suppressions and path exclusions
 
-### 🔧 **Smart Quick Fixes**
+### Raven Intelligence Bridge (Phase D)
+
+- **Attacker → Pattern**: Cowrie honeypot attacker behavior → proposed CodeGuard patterns
+- **Code → Threat**: CodeGuard findings → MITRE-mapped threat feedback for Raven
+- **Attacker-Aligned Prioritization**: Findings that match real attacker behavior get elevated priority
+- **Security Knowledge Graph**: finding → file → function → CWE → MITRE → attacker behavior → fix
+
+### Security Training Mode (Phase D)
+
+- 3 interactive training modules (SQLi, XSS, hardcoded secrets)
+- Vulnerable vs secure code side-by-side
+- Real-world breach examples + quiz
+- Webview-based — works inside VS Code
+
+### CI/CD Native Integration
+
+- GitHub Actions workflow (scan on push/PR, Semgrep + Snyk bridge)
+- GitLab CI example configuration
+- Artifact upload for security reports
+
+### Intelligent Quick Fixes
 
 - One-click secure code replacements
-- Inline suggestions as you code
-- Framework-aware best practice recommendations
-- Automated remediation where possible
+- "Explain this vulnerability" → webview with detailed analysis
+- "Learn more" → opens CWE reference
+- "Ignore this warning" → inline suppression comments
 
-### ⚡ **Performance Optimized**
+---
 
-- Debounced scanning (configurable delay)
-- Incremental analysis for large files
-- Workspace-wide scanning with progress tracking
-- Status bar integration for quick access
+## Architecture
 
------
+```
+Developer Code
+    │
+    ▼
+┌──────────────────────────────────────────────┐
+│           CodeGuard Copilot                   │
+│                                               │
+│  ┌──────────────┐  ┌──────────────┐          │
+│  │  Pattern     │  │  AST / AI     │          │
+│  │  Detection   │  │  Analysis     │          │
+│  │  (regex)     │  │  (Claude/GPT) │          │
+│  │  35+ rules   │  │               │          │
+│  └──────┬───────┘  └──────┬────────┘          │
+│         │                 │                    │
+│         ▼                 ▼                    │
+│  ┌──────────────────────────────────────┐     │
+│  │        Vulnerability Findings         │     │
+│  │  severity · CWE · file · confidence   │     │
+│  └──────────────────┬───────────────────┘     │
+│                     │                          │
+│                     ▼                          │
+│  ┌──────────────────────────────────────┐     │
+│  │       Intelligence Pipeline           │     │
+│  │                                       │     │
+│  │  ┌─────────────┐  ┌────────────────┐  │     │
+│  │  │ Knowledge    │  │ Raven Bridge    │  │     │
+│  │  │ Graph        │  │ ← attacker data │  │     │
+│  │  │ finding→CWE  │  │ → threat intel  │  │     │
+│  │  │ →MITRE→fix   │  │                 │  │     │
+│  │  └─────────────┘  └────────────────┘  │     │
+│  └──────────────────┬───────────────────┘     │
+│                     │                          │
+│                     ▼                          │
+│  ┌──────────────────────────────────────┐     │
+│  │         Developer Feedback            │     │
+│  │  QuickFix · Explain · Suppress · Fix  │     │
+│  │  Training · Report · CI/CD            │     │
+│  └──────────────────────────────────────┘     │
+│                                               │
+└──────────────────────────────────────────────┘
+                     │
+                     ▼
+┌──────────────────────────────────────────────┐
+│              WraithWall / Raven               │
+│                                               │
+│  Cowrie Honeypot → Attacker Telemetry         │
+│  Campaign Correlation → Behavioral DNA        │
+│  CISA KEV → OWASP → Composite Scoring         │
+│  Cross-Repo Systemic Patterns                 │
+│  Dark-Web Breach Monitoring                   │
+└──────────────────────────────────────────────┘
+```
 
-## 📥 Installation
+---
 
-### From Source (For Now)
+## Raven Intelligence Bridge
 
-1. **Clone the repository:**
+CodeGuard Copilot is the **frontend intelligence consumer** for Raven's attacker telemetry pipeline. When Cowrie honeypots observe real attackers using exploitation techniques, the patterns flow into CodeGuard:
+
+```
+Attacker uses SQL injection on honeypot
+    ↓
+Raven detects: CWE-89, credential_access, threat_score=85
+    ↓
+RavenIntelBridge.ingestEvent() receives event
+    ↓
+Generates candidate CodeGuard pattern at confidence 0.85
+    ↓
+Proposed pattern: "SQL Injection (attacker-observed)"
+    ↓
+Human review → published as CodeGuard rule
+    ↓
+Developers protected against the actual exploit
+```
+
+Conversely, when CodeGuard finds a vulnerability, it generates structured Raven feedback:
+
+```
+CodeGuard finding: CWE-798 hardcoded secret in auth/login.js
+    ↓
+RavenThreatFeedback.generateIntelligence()
+    ↓
+MITRE techniques: T1552, T1078
+    ↓
+Raven priority score: 72 (network attack vector, low complexity)
+    ↓
+Raven elevates this finding in composite scoring
+    ↓
+SOC team sees: "Attacker-aligned credential finding in production repo"
+```
+
+---
+
+## Detected Vulnerability Categories
+
+### Critical
+SQL Injection (CWE-89), Command Injection (CWE-78), NoSQL Injection (CWE-943), Hardcoded Secrets (CWE-798), Insecure Deserialization (CWE-502)
+
+### High
+XSS (CWE-79), DOM-based XSS, Path Traversal (CWE-22), File Upload (CWE-434), Weak Crypto (CWE-327), Unsafe Blocks (Rust), Unescaped HTML (Go)
+
+### Medium
+CORS Misconfiguration (CWE-942), Open Redirect (CWE-601), Insecure Random (CWE-338), ReDoS (CWE-1333), Memory Leak (C++), Mass Assignment (Ruby)
+
+### Low
+Weak Password Storage, Express Trust Proxy, Missing Security Headers, Framework anti-patterns
+
+### Language-specific (18 new)
+Go: SQLi, Insecure Random, Hardcoded Secret, Unescaped HTML
+Rust: Unsafe Block, Hardcoded Secret, Command Injection, Weak Crypto
+C++: Buffer Overflow, Memory Leak, SQL Injection
+C#: SQL Injection, Connection String, Insecure Deserialization
+Ruby: SQL Injection, Command Injection, Mass Assignment, Unsafe YAML
+
+---
+
+## Installation
 
 ```bash
 git clone https://github.com/niffyhunt/codeguard-copilot.git
 cd codeguard-copilot
-```
-
-1. **Install dependencies:**
-
-```bash
 npm install
-```
-
-1. **Compile the extension:**
-
-```bash
 npm run compile
+# Press F5 in VS Code to launch Extension Development Host
 ```
-
-1. **Launch in VS Code:**
-
-- Open the project in VS Code
-- Press `F5` to start debugging
-- A new Extension Development Host window will open
 
 ### Configuration
 
-1. Open VS Code Settings (`Ctrl+,` or `Cmd+,`)
-1. Search for “Codeguard Copilot”
-1. Configure your preferences:
-
 ```json
 {
-  "codeguardCopilot.enableRealtime": true,
-  "codeguardCopilot.scanDelay": 500,
-  "codeguardCopilot.aiProvider": "anthropic",
-  "codeguardCopilot.apiKey": "your-api-key-here",
-  "codeguardCopilot.enableAI": true
+  "codeguard.enableRealtime": true,
+  "codeguard.scanDelay": 500,
+  "codeguard.aiProvider": "groq",
+  "codeguard.enableAI": true,
+  "codeguard.enablePlugins": true,
+  "codeguard.enableTraining": true,
+  "codeguard.severityFilter": ["critical", "high", "medium"]
 }
 ```
 
-**🔑 Get API Keys:**
-
-- [Anthropic Claude](https://console.anthropic.com/)
-- [OpenAI GPT-4](https://platform.openai.com/)
-- [Groq](https://console.groq.com/)
-
------
-
-## 🚀 Usage
-
-### Basic Usage
-
-Codeguard Copilot works automatically once activated. Just start coding!
-
-**Keyboard Shortcuts:**
-
-- `Ctrl+Shift+S` (Mac: `Cmd+Shift+S`) - Scan current file
-- `Ctrl+Shift+M` - Open Problems panel to view vulnerabilities
-
-**Commands** (via Command Palette `Ctrl+Shift+P`):
-
-- `Codeguard Copilot: Scan Current File`
-- `Codeguard Copilot: Scan Entire Workspace`
-- `Codeguard Copilot: Explain This Vulnerability`
-
-### Example: SQL Injection Detection
-
-**Vulnerable Code:**
-
-```python
-# ❌ DANGEROUS: This code is vulnerable
-user_input = request.GET['search']
-query = f"SELECT * FROM users WHERE name = '{user_input}'"
-cursor.execute(query)
-```
-
-**What Codeguard Copilot Shows:**
-
-```
-🚨 SQL Injection: Potential SQL Injection vulnerability detected
-
-⚠️ WHY IS THIS DANGEROUS?
-String concatenation in SQL queries allows attackers to inject malicious 
-SQL commands. An attacker could read, modify, or delete your entire database.
-
-🔧 HOW TO FIX:
-Use parameterized queries or prepared statements. Never concatenate user 
-input directly into SQL.
-
-💡 SECURE EXAMPLE:
-cursor.execute("SELECT * FROM users WHERE name = %s", (user_input,))
-
-📚 REFERENCE: CWE-89
-Learn more: https://cwe.mitre.org/data/definitions/89.html
-```
-
-### Example: Hardcoded Secrets Detection
-
-**Vulnerable Code:**
-
-```javascript
-// ❌ DANGEROUS: Secrets in code
-const API_KEY = "sk-1234567890abcdefghijklmnop";
-const PASSWORD = "admin123";
-```
-
-**Codeguard Copilot Alert:**
-
-```
-🚨 Hardcoded Secret: Hardcoded secret detected (CWE-798)
-
-Secrets in source code can be exposed through version control, logs, 
-or decompilation. Attackers can use these to compromise your systems.
-
-🔧 FIX: Store secrets in environment variables
-const API_KEY = process.env.API_KEY;
-```
-
------
-
-## 🎯 Detected Vulnerabilities
-
-Codeguard Copilot detects **20+ vulnerability types** across multiple categories:
-
-### 🔴 **Critical Severity**
-
-- **SQL Injection** (CWE-89) - String concatenation in database queries
-- **Command Injection** (CWE-78) - Unsanitized input in system commands
-- **Hardcoded Secrets** (CWE-798) - API keys, passwords in source code
-- **Insecure Deserialization** (CWE-502) - Unsafe pickle/YAML operations
-- **NoSQL Injection** (CWE-943) - MongoDB query injection
-
-### 🟠 **High Severity**
-
-- **Cross-Site Scripting (XSS)** (CWE-79) - innerHTML, dangerouslySetInnerHTML
-- **Path Traversal** (CWE-22) - User-controlled file paths
-- **Arbitrary File Upload** (CWE-434) - Unrestricted file uploads
-- **Weak Cryptography** (CWE-327) - MD5, SHA1, DES usage
-- **DOM-based XSS** - document.location manipulation
-
-### 🟡 **Medium Severity**
-
-- **CORS Misconfiguration** (CWE-942) - Overly permissive origins
-- **Open Redirect** (CWE-601) - Unvalidated redirects
-- **Insecure Random** (CWE-338) - Math.random() for security
-- **ReDoS** (CWE-1333) - Regular expression denial of service
-- **Missing Security Headers** - CSP, HSTS, X-Frame-Options
-
-### 🟢 **Low Severity**
-
-- **Weak Password Storage** - Unhashed or weakly hashed passwords
-- **Express Trust Proxy** - Improper proxy configuration
-- **Framework-specific issues** - React, Node.js anti-patterns
-
-[View Full Vulnerability Database →](src/patterns/vulnerabilityPatterns.ts)
-
------
-
-## 📸 Screenshots
-
-<!-- TODO: Add actual screenshots here -->
-
-### Real-Time Vulnerability Detection
-
-![Security scanning in action](realtime-scanning.jpg)
-*Codeguard Copilot catches vulnerabilities as you type*
-
-### Educational Explanations
-
-![Detailed vulnerability explanation](https://via.placeholder.com/800x400?text=Screenshot+Coming+Soon)
-*Learn why code is vulnerable and how to fix it*
-
-### Quick Fix Suggestions
-
-![One-click secure fixes](https://via.placeholder.com/800x400?text=Screenshot+Coming+Soon)
-*Apply secure code patterns with one click*
-
-### Status Bar Integration
-
-![Status bar with scan button](https://via.placeholder.com/800x400?text=Screenshot+Coming+Soon)
-*Quick access to security scanning from the status bar*
-
------
-
-## ⚙️ Configuration
-
-All settings can be configured in VS Code Settings:
-
-|Setting                          |Type   |Default      |Description                                     |
-|---------------------------------|-------|-------------|------------------------------------------------|
-|`codeguardCopilot.enableRealtime`|boolean|`true`       |Enable real-time scanning as you type           |
-|`codeguardCopilot.scanDelay`     |number |`500`        |Delay in ms before scanning after typing stops  |
-|`codeguardCopilot.aiProvider`    |string |`"anthropic"`|AI provider: `anthropic`, `groq`, or `openai`   |
-|`codeguardCopilot.apiKey`        |string |`""`         |API key for AI provider (use workspace settings)|
-|`codeguardCopilot.enableAI`      |boolean|`true`       |Enable AI-powered deep analysis                 |
-|`codeguardCopilot.severityFilter`|array  |`all`        |Which severity levels to show                   |
-
-### Example Configuration
+### Custom Rules (.codeguard.json)
 
 ```json
 {
-  "codeguardCopilot.enableRealtime": true,
-  "codeguardCopilot.scanDelay": 500,
-  "codeguardCopilot.aiProvider": "anthropic",
-  "codeguardCopilot.enableAI": true,
-  "codeguardCopilot.severityFilter": ["critical", "high", "medium"]
+  "version": "0.1.0",
+  "customPatterns": [{
+    "id": "my-custom-rule",
+    "type": "Custom: Unsafe Function",
+    "severity": "high",
+    "regex": "eval\\\\(.*userInput",
+    "languages": ["javascript"],
+    "message": "eval() with user input detected",
+    "cwe": "CWE-95"
+  }],
+  "severityOverrides": { "SQL Injection": "critical" },
+  "excludedPaths": ["vendor/", "node_modules/", "*.test.ts"]
 }
 ```
 
-**⚠️ Important:** Store your API key in workspace settings (`.vscode/settings.json`), not in your user settings, and **never commit it to git**.
+---
 
------
+## Implementation Status
 
-## 🏗️ Architecture
+| Feature | Status |
+|---------|--------|
+| Real-time scanning (17 base patterns) | Prod |
+| AI analysis (Claude/GPT/Groq) | Prod |
+| VS Code Diagnostics + QuickFix | Prod |
+| Status bar + commands + keybindings | Prod |
+| **18 new language patterns (Go/Rust/C++/C#/Ruby)** | **v0.2.0** |
+| **.codeguard.json custom rules** | **v0.2.0** |
+| **GitHub Actions + GitLab CI/CD** | **v0.2.0** |
+| **Security Training Mode** | **v0.2.0** |
+| **Plugin system framework** | **v0.2.0** |
+| **Raven Intelligence Bridge** | **v0.2.0** |
+| **CodeGuard → Raven Threat Feedback** | **v0.2.0** |
+| **Security Knowledge Graph** | **v0.2.0** |
+| **JetBrains IDE scaffolding** | **v0.2.0** |
+| VS Code Marketplace publication | Planned |
+| Telemetry dashboard | Planned |
+| Reachability analysis (AST) | Planned |
+| Security drift detection | Research |
+
+---
+
+## Repository Structure
 
 ```
 codeguard-copilot/
-├── src/
-│   ├── extension.ts              # Entry point, VS Code integration
-│   ├── patterns/
-│   │   ├── securityScanner.ts    # Pattern-based vulnerability detection
-│   │   └── vulnerabilityPatterns.ts  # Database of 20+ vulnerability patterns
-│   ├── ai/
-│   │   └── aiEngine.ts           # AI provider integration (Claude/GPT/Groq)
-│   └── ui/
-│       ├── diagnostics.ts        # VS Code diagnostics rendering
-│       └── quickFix.ts           # Quick fix suggestions & actions
-├── package.json                   # Extension manifest
-├── tsconfig.json                  # TypeScript configuration
-└── README.md                      # You are here!
+├── .codeguard.example.json     # Custom rules template
+├── .github/workflows/ci.yml    # GitHub Actions CI/CD
+├── .gitlab-ci.example.yml      # GitLab CI integration
+├── package.json                # Extension manifest (0.2.0)
+├── tsconfig.json               # TypeScript config
+├── README.md                   # This file
+├── SETUP_GUIDE.md              # Detailed setup
+└── src/
+    ├── extension.ts            # Entry point, VS Code lifecycle
+    ├── patterns/
+    │   ├── vulnerabilityPatterns.ts   # 17 base patterns
+    │   ├── expandedPatterns.ts        # 18 language-specific patterns
+    │   └── securityScanner.ts         # Two-phase scanner
+    ├── ai/
+    │   └── aiEngine.ts         # Claude/GPT/Groq integration
+    ├── Ui/
+    │   ├── diagnostics.ts       # VS Code diagnostic rendering
+    │   └── quickFix.ts          # Quick fixes + explain webview
+    ├── config/
+    │   └── customRules.ts       # .codeguard.json loader
+    ├── plugins/
+    │   └── registry.ts          # Plugin system framework
+    ├── raven/
+    │   ├── bridge.ts            # Raven → CodeGuard intelligence
+    │   └── feedback.ts          # CodeGuard → Raven threat feedback
+    ├── knowledge/
+    │   └── graph.ts             # Security finding knowledge graph
+    ├── training/
+    │   └── mode.ts              # Interactive security training
+    └── jetbrains/
+        └── exporter.ts          # JetBrains plugin scaffolding
 ```
 
-### How It Works
+---
 
-1. **Pattern Matching Layer** (Fast, <10ms)
-- Regex-based detection for known vulnerability patterns
-- Immediate feedback as you type
-- Language-specific rule matching
-1. **AI Analysis Layer** (Smart, ~2-5s)
-- Triggered for complex code or critical vulnerabilities
-- Context-aware security analysis
-- Framework-specific recommendations
-- Identifies logic flaws that patterns can’t catch
-1. **VS Code Integration**
-- Diagnostics API for inline warnings
-- Quick fixes for automated remediation
-- Webview panels for detailed explanations
-- Status bar for quick access
+## Contributing
 
------
+1. Fork the repository
+2. Create a feature branch
+3. Add vulnerability patterns to `src/patterns/vulnerabilityPatterns.ts` or `expandedPatterns.ts`
+4. Run `npm run compile && npm run lint`
+5. Open a Pull Request
 
-## 🤝 Contributing
-
-Contributions are welcome! Whether you want to add new vulnerability patterns, improve AI prompts, or enhance the UI, we’d love your help.
-
-### How to Contribute
-
-1. **Fork the repository**
-1. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
-1. **Make your changes**
-1. **Test thoroughly** (add vulnerable code samples to test)
-1. **Commit your changes** (`git commit -m 'Add amazing feature'`)
-1. **Push to the branch** (`git push origin feature/amazing-feature`)
-1. **Open a Pull Request**
-
-### Adding Custom Vulnerability Patterns
-
-Edit `src/patterns/vulnerabilityPatterns.ts` and add your pattern:
-
+**Adding a new pattern:**
 ```typescript
 {
   type: 'Your Vulnerability Name',
-  severity: 'critical' | 'high' | 'medium' | 'low',
-  regex: /your-pattern-here/gi,
+  severity: 'critical',
+  regex: /your-pattern/gi,
   languages: ['javascript', 'python'],
   message: 'Short description',
-  explanation: 'Why this is dangerous',
-  fix: 'How to fix it',
-  codeExample: 'Secure code example',
+  explanation: 'Why this is dangerous and how attackers exploit it',
+  fix: 'Step-by-step fix instructions',
+  codeExample: '// Secure alternative code',
   cwe: 'CWE-XXX'
 }
 ```
 
-### Development Setup
+---
 
-```bash
-# Clone and install
-git clone https://github.com/inboxBodyguard/codeguard-copilot.git
-cd codeguard-copilot
-npm install
+## License
 
-# Compile TypeScript
-npm run compile
+MIT — see LICENSE file.
 
-# Watch mode (auto-recompile on changes)
-npm run watch
-
-# Debug in VS Code
-# Press F5 to launch Extension Development Host
-```
-
------
-
-## 📊 Roadmap
-
-- [ ] Support for more languages (Go, Rust, C++, C#, Ruby)
-- [ ] Custom rule configuration via `.codeguard.json`
-- [ ] Integration with SAST tools (Snyk, Semgrep)
-- [ ] Team collaboration features (shared rule sets)
-- [ ] Security training mode for learning
-- [ ] JetBrains IDE support
-- [ ] CI/CD integration for automated scanning
-- [ ] VS Code Marketplace publication
-- [ ] Telemetry dashboard for security metrics
-- [ ] Plugin system for custom analyzers
-
------
-
-## 📝 License
-
-This project is licensed under the **MIT License** - see the <LICENSE> file for details.
-
------
-
-## 🙏 Acknowledgments
-
-- **OWASP** for security vulnerability classifications
-- **CWE/MITRE** for vulnerability documentation
-- **Anthropic, OpenAI, and Groq** for AI models
-- **VS Code Team** for the excellent extension API
-- The amazing developer community for feedback and contributions
-
------
-
-## 📧 Contact & Support
-
-- **Issues:** [GitHub Issues](https://github.com/niffyhunt/codeguard-copilot/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/niffyhunt/codeguard-copilot/discussions)
-- **Email:** Ezmcyber@zohomail.com
-- **Twitter:** [@niffy_hunt](https://twitter.com/niffy_hunt)
-
------
+---
 
 <div align="center">
 
-**⭐ If Codeguard Copilot helped you write more secure code, give it a star!**
+**CodeGuard Copilot v0.2.0 — Intelligent Security Ecosystem**
 
-Made with ❤️ for secure coding
-
-[⬆ Back to Top](#-codeguard-copilot)
+Connected to Raven · Powered by attacker intelligence · Built for developers
 
 </div>
