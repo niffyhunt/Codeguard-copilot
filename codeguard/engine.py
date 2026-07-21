@@ -13,7 +13,9 @@ PATTERNS_PATH = PACKAGE_DIR / "patterns.json"
 
 
 class Finding:
-    def __init__(self, rule_id, severity, file_path, line, column, length, message, explanation, fix, cwe=None, confidence="high"):
+    def __init__(self, rule_id, severity, file_path, line, column, length,
+                 message, explanation, fix, cwe=None, confidence="high",
+                 source=None, sink=None, dataflow_path=None, analyzer="regex"):
         self.rule_id = rule_id
         self.severity = severity
         self.file_path = file_path
@@ -25,6 +27,10 @@ class Finding:
         self.fix = fix
         self.cwe = cwe
         self.confidence = confidence
+        self.source = source
+        self.sink = sink
+        self.dataflow_path = dataflow_path
+        self.analyzer = analyzer
 
     def to_dict(self):
         return {
@@ -32,7 +38,9 @@ class Finding:
             "file_path": self.file_path, "line": self.line,
             "column": self.column, "length": self.length,
             "message": self.message, "explanation": self.explanation,
-            "fix": self.fix, "cwe": self.cwe, "confidence": self.confidence
+            "fix": self.fix, "cwe": self.cwe, "confidence": self.confidence,
+            "source": self.source, "sink": self.sink,
+            "dataflow_path": self.dataflow_path, "analyzer": self.analyzer,
         }
 
 
@@ -42,6 +50,22 @@ class CodeGuardEngine:
         self.patterns = []
         self.custom_patterns = []
         self._load_patterns()
+        self._ast_enabled = True
+
+    def _is_test_or_generated(self, file_path):
+        path = file_path.lower().replace('\\', '/')
+        fname = os.path.basename(path)
+        if fname.startswith('test_') or fname.startswith('conftest.'):
+            return True
+        if '_test.' in fname or '.test.' in fname or 'spec_' in fname:
+            return True
+        if '/tests/' in path or '/test/' in path or '/__pycache__/' in path:
+            return True
+        if '/fixtures/' in path or '/examples/' in path or '/docs/' in path:
+            return True
+        if '/vendor/' in path or '/node_modules/' in path:
+            return True
+        return False
 
     def _load_patterns(self):
         if os.path.exists(self.patterns_path):
@@ -79,45 +103,96 @@ class CodeGuardEngine:
             return []
 
         language = self._resolve_language(file_path)
+        is_test = self._is_test_or_generated(file_path)
+
         try:
             with open(file_path, "r", errors="ignore") as f:
                 lines = f.readlines()
+                code = "".join(lines)
         except Exception:
             return []
 
         findings = []
         all_patterns = self.patterns + self.custom_patterns
 
-        for pattern in all_patterns:
-            if severity_filter and pattern.get("severity") not in severity_filter:
-                continue
-
-            langs = pattern.get("languages", ["*"])
-            if "*" not in langs and language not in langs:
-                continue
-
-            regex = pattern.get("_compiled")
-            if not regex:
-                try:
-                    regex = re.compile(pattern["regex"], re.IGNORECASE | re.MULTILINE)
-                    pattern["_compiled"] = regex
-                except re.error:
+        # Layer 1: Regex (fast first pass — skip for test files)
+        if not is_test:
+            for pattern in all_patterns:
+                if severity_filter and pattern.get("severity") not in severity_filter:
                     continue
 
-            for line_num, line_text in enumerate(lines, 1):
-                for match in regex.finditer(line_text):
+                langs = pattern.get("languages", ["*"])
+                if "*" not in langs and language not in langs:
+                    continue
+
+                regex = pattern.get("_compiled")
+                if not regex:
+                    try:
+                        regex = re.compile(pattern["regex"], re.IGNORECASE | re.MULTILINE)
+                        pattern["_compiled"] = regex
+                    except re.error:
+                        continue
+
+                for line_num, line_text in enumerate(lines, 1):
+                    for match in regex.finditer(line_text):
+                        findings.append(Finding(
+                            rule_id=pattern.get("type", "unknown"),
+                            severity=pattern.get("severity", "medium"),
+                            file_path=file_path, line=line_num,
+                            column=match.start() + 1,
+                            length=match.end() - match.start(),
+                            message=pattern.get("message", ""),
+                            explanation=pattern.get("explanation", ""),
+                            fix=pattern.get("fix", ""),
+                            cwe=pattern.get("cwe"),
+                            confidence="high" if not is_test else "low",
+                            analyzer="regex",
+                        ))
+
+        # Layer 2: AST analysis (context-aware — all files, test context flagged)
+        if self._ast_enabled and language == "python":
+            try:
+                from .ast_analyzer import PythonASTAnalyzer
+                ast_findings = PythonASTAnalyzer().analyze(file_path, code)
+                for af in ast_findings:
+                    confidence = af.confidence
+                    if is_test:
+                        confidence = "low"
+                        af.message = f"[TEST FILE] {af.message}"
                     findings.append(Finding(
-                        rule_id=pattern.get("type", "unknown"),
-                        severity=pattern.get("severity", "medium"),
-                        file_path=file_path,
-                        line=line_num,
-                        column=match.start() + 1,
-                        length=match.end() - match.start(),
-                        message=pattern.get("message", ""),
-                        explanation=pattern.get("explanation", ""),
-                        fix=pattern.get("fix", ""),
-                        cwe=pattern.get("cwe"),
+                        rule_id=af.rule_id, severity=af.severity,
+                        file_path=file_path, line=af.line, column=af.column,
+                        length=af.length, message=af.message,
+                        explanation=af.explanation, fix=af.fix, cwe=af.cwe,
+                        confidence=confidence,
+                        source=af.source_call, sink=af.sink_call,
+                        dataflow_path=af.dataflow_path, analyzer="ast",
                     ))
+            except ImportError:
+                pass
+            except Exception:
+                pass
+
+        if language in ("javascript", "typescript", "go", "rust"):
+            try:
+                from .ast_analyzer import GenericASTAnalyzer
+                ast_findings = GenericASTAnalyzer().analyze(file_path, code, language)
+                for af in ast_findings:
+                    confidence = af.confidence
+                    if is_test:
+                        confidence = "low"
+                    findings.append(Finding(
+                        rule_id=af.rule_id, severity=af.severity,
+                        file_path=file_path, line=af.line, column=af.column,
+                        length=af.length, message=af.message,
+                        explanation=af.explanation, fix=af.fix, cwe=af.cwe,
+                        confidence=confidence,
+                        source=af.source_call, sink=af.sink_call, analyzer="ast",
+                    ))
+            except ImportError:
+                pass
+            except Exception:
+                pass
 
         return self._deduplicate(findings)
 
