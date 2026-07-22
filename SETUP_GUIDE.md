@@ -36,6 +36,8 @@ CodeGuard scans every supported file and prints findings to your terminal with s
 | **Secret Detection v2** | 20+ structured secret types + Shannon entropy detection for unknown tokens |
 | **0 API Calls** | Everything runs locally. No data leaves your machine. |
 
+![Languages & Coverage](docs/diagram_coverage.png)
+
 ## Optional: WraithCore-7B (Local AI)
 
 Runs a fine-tuned Qwen2.5-7B security model on your GPU. Zero API calls.
@@ -77,6 +79,8 @@ raven-guard scan . --env dev        # all findings
 ```bash
 raven-guard scan . --exploitability -x
 ```
+
+![Exploitability Scoring](docs/diagram_exploitability.png)
 
 ### Output Formats
 
@@ -138,27 +142,9 @@ Features: real-time diagnostics, inline QuickFix, explain vulnerability, suppres
 
 ## Architecture
 
-```
-Source Code
-    │
-    ▼
-Layer 1: Regex (64 patterns, 14 languages)
-    │
-    ▼
-Layer 2: AST Analysis (tree-sitter, 10 analyzers)
-    │
-    ▼
-Layer 2.5: Secret Detection v2 (entropy + structure)
-    │
-    ▼
-Layer 3: WraithCore Model (optional, local GPU)
-    │
-    ▼
-Layer 4: Exploitability Scoring (0-10)
-    │
-    ▼
-Findings + Reports (SARIF, JSON, HTML, Markdown)
-```
+![Architecture Pipeline](docs/diagram_architecture.png)
+
+![Deployment Modes](docs/diagram_deployment.png)
 
 ## System Health
 
