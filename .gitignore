@@ -5,6 +5,7 @@ out/
 __pycache__/
 *.egg-info/
 *.egg
-build/ **
+build/
+dist/
 dist/
 patterns.json

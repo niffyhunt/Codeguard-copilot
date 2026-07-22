@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "raven-guard"
-version = "0.3.3"
+version = "0.5.0"
 description = "Security analysis engine — catches vulnerabilities before they ship. CLI, pre-commit, CI/CD, AI-powered, Raven-connected. (CodeGuard Copilot CLI — published as raven-guard on PyPI)"
 readme = "README.md"
 license = {text = "MIT"}
@@ -26,8 +26,9 @@ requires-python = ">=3.9"
 dependencies = []
 
 [project.optional-dependencies]
+wraithcore = ["torch>=2.0", "transformers>=4.30", "accelerate", "bitsandbytes", "peft>=0.10"]
 ai = ["requests"]
-all = ["requests"]
+all = ["requests", "torch", "transformers", "accelerate", "bitsandbytes", "peft"]
 
 [project.urls]
 Homepage = "https://github.com/niffyhunt/codeguard-copilot"

@@ -2,7 +2,7 @@
 import json
 import os
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def github_annotation(findings, level="warning"):
@@ -19,7 +19,7 @@ def gitlab_artifact(findings, output_file="codeguard-report.json"):
     """Write GitLab CI-compatible artifact."""
     data = {
         "tool": "CodeGuard",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "findings": [f.to_dict() for f in findings],
     }
     with open(output_file, "w") as f:

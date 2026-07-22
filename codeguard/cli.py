@@ -6,7 +6,7 @@ import argparse
 import hashlib
 import importlib.util
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 from .engine import CodeGuardEngine
 from .output import format_text, format_json, format_sarif, format_markdown, format_html
@@ -40,6 +40,8 @@ def main():
                        help="Environment context: dev=all, staging=high+, prod=critical+")
     scan.add_argument("--plugin", action="append", dest="plugins",
                        help="Path to plugin Python file (can be used multiple times)")
+    scan.add_argument("--exploitability", "-x", action="store_true",
+                       help="Score findings by exploitability (0-10) for prioritized remediation")
     scan.add_argument("--drift", action="store_true",
                        help="Compare with previous scan, show new/resolved findings")
 
@@ -83,11 +85,15 @@ def _cmd_scan(args):
         if not args.quiet:
             print(f"  Environment: {args.env} (showing: {', '.join(severity_filter)})")
 
+    exploitability_stats = None
     path = args.path
     if os.path.isfile(path):
         findings = engine.scan_file(path, severity_filter)
     elif os.path.isdir(path):
-        findings = engine.scan_directory(path, severity_filter)
+        if args.exploitability:
+            findings, exploitability_stats = engine.scan_directory(path, severity_filter, exploitability=True)
+        else:
+            findings = engine.scan_directory(path, severity_filter)
     else:
         print(f"Error: {path} does not exist", file=sys.stderr)
         sys.exit(1)
@@ -144,7 +150,10 @@ def _cmd_scan(args):
         for f in findings:
             sev_counts[f.severity] = sev_counts.get(f.severity, 0) + 1
         parts = [f"{c} {s}" for s, c in sorted(sev_counts.items())]
-        print(f"\n{len(findings)} findings ({', '.join(parts)})")
+        summary = f"\n{len(findings)} findings ({', '.join(parts)})"
+        if exploitability_stats:
+            summary += f"\n  Exploitability: avg {exploitability_stats['average']}/10, max {exploitability_stats['max']}/10 ({exploitability_stats['critical_count']} critical-scored)"
+        print(summary)
 
     # Save scan state for drift
     _save_scan_state(findings, path)
@@ -182,7 +191,7 @@ def _save_scan_state(findings, scan_path):
     state_file = Path(scan_path if os.path.isfile(scan_path) else scan_path) / ".codeguard-state.json"
     try:
         state_file.write_text(json.dumps({
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "findings": [{"rule_id": f.rule_id, "file_path": f.file_path, "line": f.line,
                           "severity": f.severity, "cwe": f.cwe, "message": f.message} for f in findings],
         }, indent=2))

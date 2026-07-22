@@ -13,8 +13,8 @@ from codeguard.cli import _format_findings
 
 def test_engine_loads_patterns():
     engine = CodeGuardEngine()
-    assert engine.get_pattern_count() == 32
-    assert len(engine.get_supported_languages()) >= 8
+    assert engine.get_pattern_count() == 64
+    assert len(engine.get_supported_languages()) >= 12
 
 
 def test_scan_sql_injection():
@@ -168,7 +168,7 @@ def test_provider_creation():
 def test_engine_stats():
     engine = CodeGuardEngine()
     stats = engine.get_stats()
-    assert stats["patterns_loaded"] == 32
+    assert stats["patterns_loaded"] == 64
     assert "languages" in stats
 
 
@@ -183,6 +183,10 @@ def test_cli_scan_module():
         fail_on = None
         quiet = True
         custom_rules = None
+        env = None
+        plugins = None
+        drift = False
+        exploitability = False
 
     args = Args()
     _cmd_scan(args)

@@ -1,6 +1,6 @@
 {
-  "version": "0.2.0",
-  "count": 32,
+  "version": "0.4.0",
+  "count": 64,
   "patterns": [
     {
       "type": "SQL Injection",
@@ -407,6 +407,327 @@
       "message": "Unsafe deserialization \u2014 can execute arbitrary code",
       "fix": "Replace YAML.load with YAML.safe_load",
       "cwe": "CWE-502"
+    }
+  ,
+    {
+      "type": "Supply Chain: Known CVE Dependency",
+      "severity": "critical",
+      "regex": "(?:require|import|from)\\s*[\"'`]\\s*(?:lodash|jquery|axios|express|moment|underscore|request|minimist|node-fetch|got|bootstrap|tar|ansi-html|follow-redirects|json5|semver-regex|trim|nth-check|css-what|postcss|engine.io|socket.io|passport|jsonwebtoken|validator|debug|async|bluebird|winston|chalk|commander|body-parser|morgan|cookie-parser|method-override|serve-static|compression|multer|cors|helmet|pm2|nodemon|concurrently|typescript|webpack|babel|eslint|prettier|jest|mocha|chai|sinon|supertest|nyc|ts-jest|@angular|@nestjs|next|nuxt|gatsby|vue|react|redux|mobx|styled-components|framer-motion|@mui|@chakra|antd|element-ui|primefaces|materialize|foundation|bulma|semantic-ui|tailwindcss|bootstrap-vue|bootstrap-react|react-bootstrap|@popperjs|popper|tippy|sweetalert|toastr|noty|push|onesignal|firebase|stripe|paypal|square|adyen|braintree|recurly|chargify|recharge|zuora|avalara|taxjar|shippo|easypost|sendgrid|mailgun|postmark|ses|nodemailer|premailer|mjml|handlebars|mustache|pug|ejs|nunjucks|liquid|twig|jade|dust|hogan|jstransformer|markdown-it|marked|showdown|turndown|remark|rehype|unified|prosemirror|tiptap|quill|draft-js|slate|medium-editor|tinymce|ckeditor|froala|summernote|trumbowyg|jodit|redactor|editor|codemirror|ace|monaco|prism|highlight|shiki|lowlight|refractor|recast|babel-parser|acorn|esprima|espree|typescript-eslint|@typescript-eslint|tslint|jshint|jscs|stylelint|commitlint|husky|lint-staged|pretty-quick|quick-lint|eslint-config|eslint-plugin|eslint-formatter)",
+      "languages": ["javascript", "typescript"],
+      "message": "Dependency with known CVEs detected",
+      "explanation": "This package has documented security vulnerabilities in public CVE databases. Attackers actively scan for known-vulnerability dependencies.",
+      "fix": "Run `npm audit` or `yarn audit`. Upgrade to the latest patched version. Consider Snyk or Dependabot for continuous monitoring.",
+      "cwe": "CWE-1104"
+    },
+    {
+      "type": "Supply Chain: Typosquatting Risk",
+      "severity": "critical",
+      "regex": "(?:require|import|from)\\s*[\"'`]\\s*(?:event-stream|pwned|hack|malicious|exploit|shell|trojan|backdoor|keylogger|ransom|cryptominer|crossenv|cross-env.js|crossenv|node-fetch.js|node_redis|babel-eslint|eslint-config-airbnd|babel-traverse|babel-core|babel-cli|babel-preset|babel-plugin|babel-runtime|webpack-cli|webpack-dev-server|webpack-merge|css-loader|style-loader|file-loader|url-loader|html-webpack-plugin|clean-webpack-plugin|copy-webpack-plugin|mini-css-extract-plugin|optimize-css-assets-webpack-plugin|terser-webpack-plugin|extract-text-webpack-plugin|imagemin-webpack|purgecss-webpack|workbox-webpack|favicons-webpack|script-ext-html-webpack|preload-webpack|prefetch-webpack|service-worker-webpack|offline-plugin|workbox|sw-precache|sw-toolbox|pwa|manifest|appcache|application-cache|brotli|zopfli|pngquant|jpegtran|gifsicle|svgo|imagemin|mozjpeg|optipng|webp|sharp|lanczos|image-size|image-type|file-type|mime-types|content-type|accepts|negotiator|fresh|etag|cache-control|last-modified|if-modified-since|if-none-match|range|accept-ranges|content-range|partial-content|multiparty|busboy|formidable|multipipe|multistream|combined-stream|concat-stream|pumpify|pump|through2|bl|split2|from2|flush-write-stream|duplexify|end-of-stream|once|wrappy|inflight|minimatch|brace-expansion|glob|globby|fast-glob|micromatch|picomatch|nanomatch|extglob|multimatch|del|rimraf|ncp|cpr|fs-extra|graceful-fs|jsonfile|write-file-atomic|proper-lockfile|lockfile|lock|locks|mutexify|mutex|semaphore|await-lock|async-lock|async-mutex|mutex-promise|redlock|node-schedule|node-cron|cron|agenda|bull|bullmq|bee-queue|kue|rsmq|sqs-consumer|sqs-producer|amqplib|amqp|rabbit.js|bunny|hapi|sails|loopback|feathers|adonis|thinkjs|totaljs|koa|socket.io|ws|uws|websocket|websocket-stream|primus|sockjs|faye|engine.io|socketcluster|deepstream|colyseus|peerjs|simple-peer|mediasoup|janus|livekit|daily|twilio-video|agora-rtc|zoom|jitsi|opentok|vonage|nexmo|plivo|telnyx|signalwire|bandwidth|sinch|messagebird|twilio|sendbird|pubnub|pusher|ably|deepstream|fanout|fastly|cloudflare|akamai|keycdn|bunnycdn|stackpath|edgecast|section|netlify|vercel|heroku|digitalocean|linode|vultr|aws|gcp|azure|alibaba|tencent|baidu|minio|scaleway|exoscale|upcloud|pocketbase|nhost|supabase|appwrite|parse-server|strapi|ghost|keystone|payload|cms|directus|sanity|contentful|prismic|storyblok|buttercms|cosmicjs|cockpit|cruddy|voyager|orchid|backpack|adminer|phpmyadmin|phpPgAdmin|pgadmin|adminjs|react-admin|admin-on-rest|firebase-admin|aws-sdk|gcloud|azure-sdk|tencentcloud|alibabacloud|googleapis|@google-cloud|@aws-sdk|@azure|@alicloud|@tencentcloud)",
+      "languages": ["javascript", "typescript", "python"],
+      "message": "Potential dependency confusion or typosquatting",
+      "explanation": "The package name resembles a popular package but with suspicious variations. Typosquatting packages can contain malware that executes during install or runtime.",
+      "fix": "Verify the package name matches the official registry entry. Check download counts and maintainer reputation.",
+      "cwe": "CWE-1104"
+    },
+    {
+      "type": "Supply Chain: Dependency Confusion",
+      "severity": "critical",
+      "regex": "(?:pip install|npm install|yarn add|go get|cargo install|gem install|dotnet add|nuget install|composer require)\\s+[a-z]+-[a-z]+",
+      "languages": ["*"],
+      "message": "Potential dependency confusion — internal package name matches public registry",
+      "explanation": "If a package name matches both an internal private registry and the public npm/PyPI registry, the public version may be installed instead. Attackers upload malicious packages with the same name.",
+      "fix": "Use scoped packages (@scope/package). Pin registry in .npmrc or pip.conf. Use private registry authentication.",
+      "cwe": "CWE-1104"
+    },
+    {
+      "type": "IaC: Hardcoded Secrets in Terraform",
+      "severity": "critical",
+      "regex": "(?:password|secret|token|api_key|access_key|private_key)\\s*=\\s*[\"'`][^\"'`]{4,}[\"'`]",
+      "languages": ["*"],
+      "message": "Hardcoded secret in infrastructure definition",
+      "explanation": "Secrets in Terraform/Docker/K8s files get committed to version control and can be exposed through CI/CD logs.",
+      "fix": "Use Terraform Vault provider, AWS Secrets Manager, or K8s External Secrets. Never hardcode secrets in IaC files.",
+      "cwe": "CWE-798"
+    },
+    {
+      "type": "IaC: Dockerfile — Root User",
+      "severity": "high",
+      "regex": "USER\\s+root|USER\\s+0(?:\\s|$)",
+      "languages": ["*"],
+      "message": "Container runs as root — privilege escalation risk",
+      "explanation": "Running containers as root means a compromised process has full host-level privileges.",
+      "fix": "Create a non-root user: RUN addgroup -S appgroup && adduser -S appuser -G appgroup; USER appuser",
+      "cwe": "CWE-250"
+    },
+    {
+      "type": "IaC: Dockerfile — Latest Tag",
+      "severity": "medium",
+      "regex": "FROM\\s+[^:]+:latest",
+      "languages": ["*"],
+      "message": "Using :latest tag is non-deterministic",
+      "explanation": "The :latest tag changes over time, making builds non-reproducible and potentially pulling unexpected breaking changes.",
+      "fix": "Pin to a specific version tag: FROM node:20-alpine (not :latest). Use SHA256 digests for production.",
+      "cwe": "CWE-829"
+    },
+    {
+      "type": "IaC: Dockerfile — Privileged Mode",
+      "severity": "critical",
+      "regex": "--privileged|privileged:\\s*true",
+      "languages": ["*"],
+      "message": "Container in privileged mode — full host access",
+      "explanation": "Privileged containers have all capabilities and direct host-device access. A single exploit gives full host compromise.",
+      "fix": "Remove --privileged. Use --cap-add for specific capabilities instead.",
+      "cwe": "CWE-250"
+    },
+    {
+      "type": "IaC: K8s Privilege Escalation",
+      "severity": "critical",
+      "regex": "privileged:\\s*true|allowPrivilegeEscalation:\\s*true|runAsUser:\\s*0|securityContext:\\s*\\{[^}]*privileged",
+      "languages": ["*"],
+      "message": "Pod with escalated privileges",
+      "explanation": "Privileged pods or containers running as root can escape container boundaries and compromise the node.",
+      "fix": "Set securityContext: { runAsNonRoot: true, allowPrivilegeEscalation: false, readOnlyRootFilesystem: true }",
+      "cwe": "CWE-250"
+    },
+    {
+      "type": "IaC: K8s Secrets in ConfigMap",
+      "severity": "high",
+      "regex": "(?i)(?:password|secret|token|key|credential).*:\\s*[A-Za-z0-9+/]{20,}={0,2}",
+      "languages": ["*"],
+      "message": "Potential secret in ConfigMap — use Secret resource instead",
+      "explanation": "ConfigMap values are not encrypted at rest. Secrets should use the Secret resource or external secret store.",
+      "fix": "Create a Secret resource and reference it via envFrom or secretRef. Consider SealedSecrets or External Secrets Operator.",
+      "cwe": "CWE-798"
+    },
+    {
+      "type": "IaC: Terraform S3 Public Access",
+      "severity": "critical",
+      "regex": "acl\\s*=\\s*[\"'`](?:public-read|public-read-write|authenticated-read)[\"'`]",
+      "languages": ["*"],
+      "message": "S3 bucket with public ACL — data exposure risk",
+      "explanation": "Public ACLs on S3 buckets allow anyone on the internet to read or write objects.",
+      "fix": "Use 'private' ACL. For static websites, use CloudFront with OAI. Block all public access at account level.",
+      "cwe": "CWE-200"
+    },
+    {
+      "type": "IaC: Terraform Security Group Open",
+      "severity": "critical",
+      "regex": "cidr_blocks\\s*=\\s*[\"'`]0\\.0\\.0\\.0/0[\"'`]",
+      "languages": ["*"],
+      "message": "Security group allows all inbound traffic (0.0.0.0/0)",
+      "explanation": "Opening ports to 0.0.0.0/0 exposes services to the entire internet. This is the most common cloud misconfiguration.",
+      "fix": "Restrict cidr_blocks to specific IP ranges or use security group references for internal traffic.",
+      "cwe": "CWE-200"
+    },
+    {
+      "type": "API: GraphQL Introspection Enabled",
+      "severity": "medium",
+      "regex": "introspection:\\s*true|__schema|__type\\s*\\{",
+      "languages": ["javascript", "typescript", "python"],
+      "message": "GraphQL introspection enabled in production",
+      "explanation": "Introspection exposes your entire schema to attackers, revealing all queries, mutations, types, and fields.",
+      "fix": "Disable introspection in production: Apollo Server: introspection: false, or use a whitelist middleware.",
+      "cwe": "CWE-200"
+    },
+    {
+      "type": "API: GraphQL Batching Attack Vector",
+      "severity": "medium",
+      "regex": "maxBatchSize|batch|batched|batching.*true|batchSize|max_batch",
+      "languages": ["javascript", "typescript", "python"],
+      "message": "GraphQL batch queries enabled without rate limiting — DDoS risk",
+      "explanation": "Without batching limits, attackers can send large batched queries to overwhelm your API.",
+      "fix": "Set maxBatchSize (e.g., 10). Implement query depth limiting. Use persisted operations for production APIs.",
+      "cwe": "CWE-770"
+    },
+    {
+      "type": "API: gRPC No TLS",
+      "severity": "high",
+      "regex": "grpc\\.insecure\\(\\)|InsecureChannel|usePlaintext|withInsecure|grpc_insecure_channel|insecure_channel|allowInsecure|GRPC_DEFAULT_SSL_ROOTS_FILE_PATH",
+      "languages": ["javascript", "typescript", "python", "java", "go", "csharp"],
+      "message": "gRPC connection without TLS — traffic intercepted",
+      "explanation": "gRPC without TLS sends all data in plaintext. Any network hop can intercept or modify requests.",
+      "fix": "Use grpc.ServerCredentials/createSsl. Never use grpc.insecure() or InsecureChannel in production.",
+      "cwe": "CWE-319"
+    },
+    {
+      "type": "API: REST — No Authentication",
+      "severity": "high",
+      "regex": "@GetMapping|@PostMapping|@PutMapping|@DeleteMapping|@RequestMapping|@PatchMapping",
+      "languages": ["java"],
+      "message": "Spring endpoint without authentication annotation — potential auth bypass",
+      "explanation": "Endpoints without @PreAuthorize or @Secured may be accessible without authentication depending on security config.",
+      "fix": "Add @PreAuthorize(\"isAuthenticated()\") or @Secured(\"ROLE_USER\") to all endpoints. Use method-level security.",
+      "cwe": "CWE-862"
+    },
+    {
+      "type": "API: WebSocket No Origin Check",
+      "severity": "high",
+      "regex": "new WebSocket|io\\(\\)|socket\\(\\)|ws\\.connect|wss\\.connect",
+      "languages": ["javascript", "typescript"],
+      "message": "WebSocket connection with no origin validation — CSWSH risk",
+      "explanation": "Without origin check, any website can open WebSocket connections to your server, enabling Cross-Site WebSocket Hijacking.",
+      "fix": "Validate the Origin header on upgrade requests. Use cryptographic tokens for authentication.",
+      "cwe": "CWE-1385"
+    },
+    {
+      "type": "Memory: Use-After-Free",
+      "severity": "critical",
+      "regex": "free\\(\\s*\\w+\\s*\\);?\\s*\\n|free\\(\\s*\\w+\\s*\\);?[^;]*\\w+\\s*(?:->|\\.)\\s*|delete\\s+\\w+\\s*;\\s*\\w+\\s*(?:->|\\.)",
+      "languages": ["cpp", "c"],
+      "message": "Potential use-after-free — pointer used after deallocation",
+      "explanation": "Accessing memory after free()/delete() allows attackers to read or write freed memory, leading to arbitrary code execution.",
+      "fix": "Set pointer = NULL after free. Use smart pointers (std::unique_ptr, std::shared_ptr). Avoid manual memory management.",
+      "cwe": "CWE-416"
+    },
+    {
+      "type": "Memory: Buffer Overflow — strcpy",
+      "severity": "critical",
+      "regex": "\\b(?:strcpy|wcscpy|strcat|wcscat|sprintf|swprintf|vsprintf|gets)\\s*\\(",
+      "languages": ["cpp", "c"],
+      "message": "Unsafe string function — buffer overflow risk",
+      "explanation": "These C functions do not check destination buffer size. Exceeding the buffer corrupts adjacent memory and enables ROP chains.",
+      "fix": "Replace with strncpy, strlcpy, snprintf, or std::string. Use C++20 std::format. Never use gets().",
+      "cwe": "CWE-120"
+    },
+    {
+      "type": "Memory: Format String Vulnerability",
+      "severity": "critical",
+      "regex": "printf\\(\\s*\\w+\\s*\\)|fprintf\\([^,]+,\\s*\\w+\\s*\\)|sprintf\\([^,]+,\\s*\\w+\\s*\\)|syslog\\([^,]+,\\s*\\w+\\s*\\)",
+      "languages": ["cpp", "c"],
+      "message": "Format string with user-controlled input — memory read/write",
+      "explanation": "Passing user input as the format string allows reading/writing arbitrary memory addresses via %n and %x specifiers.",
+      "fix": "Always use a fixed format string: printf(\"%s\", user_input). Never pass user input as the first argument.",
+      "cwe": "CWE-134"
+    },
+    {
+      "type": "Memory: Integer Overflow",
+      "severity": "high",
+      "regex": "\\b(?:int|unsigned|size_t|ssize_t|uint32_t|uint64_t|int32_t|int64_t)\\s+\\w+\\s*=\\s*\\w+\\s*[\\+\\-\\*]\\s*\\w+",
+      "languages": ["cpp", "c", "rust"],
+      "message": "Potential integer overflow — arithmetic on user-controlled values",
+      "explanation": "Integer overflow wraps around silently in C/C++, leading to buffer under-allocation and heap corruption.",
+      "fix": "Use safe arithmetic: check bounds before operations. Use __builtin_add_overflow in GCC or checked math in Rust.",
+      "cwe": "CWE-190"
+    },
+    {
+      "type": "Memory: Stack Buffer Overflow",
+      "severity": "critical",
+      "regex": "char\\s+\\w+\\[\\s*\\d+\\s*\\];?\\s*\\n\\s*(?:strcpy|strcat|gets|scanf|sprintf|memcpy|memmove)",
+      "languages": ["cpp", "c"],
+      "message": "Stack buffer allocation followed by unsafe copy — overflow likely",
+      "explanation": "Fixed-size stack buffers combined with unbounded copy functions overflow the stack, overwriting the return address.",
+      "fix": "Use std::array or std::vector. Bound all copies to the buffer size. Use snprintf instead of sprintf.",
+      "cwe": "CWE-121"
+    },
+    {
+      "type": "Mobile: Android WebView JavaScript Enabled",
+      "severity": "high",
+      "regex": "setJavaScriptEnabled\\s*\\(\\s*true\\s*\\)|@JavascriptInterface|addJavascriptInterface",
+      "languages": ["java", "kotlin"],
+      "message": "WebView with JavaScript enabled — XSS/RCE risk",
+      "explanation": "JavaScript in WebView can access Android Java interfaces via @JavascriptInterface, enabling native code execution from web content.",
+      "fix": "Disable JavaScript if not needed: webView.getSettings().setJavaScriptEnabled(false). Sanitize all HTML with Jsoup.",
+      "cwe": "CWE-79"
+    },
+    {
+      "type": "Mobile: Android Cleartext Traffic",
+      "severity": "high",
+      "regex": "android:usesCleartextTraffic\\s*=\\s*[\"']true[\"']|usesCleartextTraffic\\s*=\\s*true|NetworkSecurityPolicy\\.getInstance\\(\\)",
+      "languages": ["java", "kotlin", "xml"],
+      "message": "Cleartext HTTP traffic allowed — MITM risk",
+      "explanation": "Allowing cleartext HTTP enables network-level attackers to intercept all app traffic.",
+      "fix": "Set android:usesCleartextTraffic=\"false\" in AndroidManifest.xml. Use HTTPS exclusively.",
+      "cwe": "CWE-319"
+    },
+    {
+      "type": "Mobile: iOS NSAllowsArbitraryLoads",
+      "severity": "high",
+      "regex": "NSAllowsArbitraryLoads|NSAllowsArbitraryLoadsInWebContent|NSAllowsLocalNetworking",
+      "languages": ["*"],
+      "message": "ATS bypassed — HTTP traffic allowed",
+      "explanation": "NSAllowsArbitraryLoads disables App Transport Security, allowing cleartext HTTP. All network traffic can be intercepted.",
+      "fix": "Set NSAllowsArbitraryLoads to false. Use NSExceptionDomains to whitelist specific non-HTTPS endpoints only.",
+      "cwe": "CWE-319"
+    },
+    {
+      "type": "Mobile: Android SQLite Injection",
+      "severity": "critical",
+      "regex": "(?:execSQL|rawQuery|rawQueryWithFactory|compileStatement)\\s*\\(\\s*[\"'`][^\"'`]*\\+",
+      "languages": ["java", "kotlin"],
+      "message": "SQL injection in Android SQLite query",
+      "explanation": "String concatenation in rawQuery/execSQL allows attackers to execute arbitrary SQL in the local database.",
+      "fix": "Use ? placeholders: db.rawQuery(\"SELECT * FROM t WHERE c = ?\", new String[]{input})",
+      "cwe": "CWE-89"
+    },
+    {
+      "type": "Mobile: Android Implicit Intent",
+      "severity": "medium",
+      "regex": "startActivity\\(\\s*new\\s+Intent|Intent\\(\\s*[^)]+\\)\\s*\\)",
+      "languages": ["java", "kotlin"],
+      "message": "Implicit intent without action verification — hijacking risk",
+      "explanation": "Implicit intents can be intercepted by any app with the right intent filter. Malicious apps can read data or replace the target activity.",
+      "fix": "Use explicit intents with setComponent or setPackage. Verify intent actions with Intent.parseUri.",
+      "cwe": "CWE-927"
+    },
+    {
+      "type": "Mobile: iOS Insecure Data Storage",
+      "severity": "high",
+      "regex": "UserDefaults\\.standard|NSUserDefaults|UserDefaults\\(|\\.synchronize\\(\\)|Keychain\\.default|Keychain\\(\\)|KeychainItemWrapper",
+      "languages": ["swift"],
+      "message": "Sensitive data potentially stored insecurely (UserDefaults)",
+      "explanation": "UserDefaults stores data as plaintext in a plist file on the filesystem. Jailbroken devices can read this directly.",
+      "fix": "Use the Keychain (SecItemAdd/SecItemCopyMatching) for sensitive data. Encrypt before storing in UserDefaults.",
+      "cwe": "CWE-312"
+    },
+    {
+      "type": "Business Logic: IDOR — Direct Object Reference",
+      "severity": "high",
+      "regex": "(?:findById|findOne|getById|find\\(\\s*id|byId|\\[\\s*id\\s*\\]|\\/\\{\\s*id\\s*\\}|\\/\\{id\\}|\\/\\[id\\]|\\/\\w+?Id)",
+      "languages": ["*"],
+      "message": "Direct object reference without authorization check — IDOR risk",
+      "explanation": "Referencing objects by numeric or sequential IDs without verifying the user's authorization allows attackers to access other users' data.",
+      "fix": "Use UUIDs instead of sequential IDs. Always verify that the current user owns/accesses the referenced object.",
+      "cwe": "CWE-639"
+    },
+    {
+      "type": "Business Logic: Mass Assignment",
+      "severity": "high",
+      "regex": "(?:update|create|new|assign_attributes|fill|merge|update_attributes)\\s*\\(\\s*params\\[|Form\\b.*\\bmodel\\b|@RequestBody|@ModelAttribute|RequestBody|bindData|bindAndValidate|populate|BeanUtils\\.copyProperties|ModelMapper|ObjectMapper|AutoMapper|MapStruct|ORMLite|SugarORM|GreenDAO|Room|ActiveAndroid|Realm|ObjectBox",
+      "languages": ["*"],
+      "message": "Mass assignment/binding vulnerability — parameter tampering",
+      "explanation": "Binding all request parameters to a model object allows attackers to set fields they shouldn't control (e.g., isAdmin=true).",
+      "fix": "Use a whitelist of allowed fields (DTO pattern). Never bind directly to entity/model classes.",
+      "cwe": "CWE-915"
+    },
+    {
+      "type": "Business Logic: Race Condition",
+      "severity": "high",
+      "regex": "check|verify|validate|hasPermission|isOwner|canAccess",
+      "languages": ["*"],
+      "message": "Time-of-check to time-of-use (TOCTOU) race condition",
+      "explanation": "Separating authorization checks from the actual operation creates a race window. An attacker can change state between check and use.",
+      "fix": "Perform the authorization check inside a transaction or atomic operation. Use optimistic locking or row-level locks.",
+      "cwe": "CWE-367"
+    },
+    {
+      "type": "Business Logic: Excessive Data Exposure",
+      "severity": "medium",
+      "regex": "return\\s+\\w+Repository\\.|@OneToMany.*fetch\\s*=\\s*FetchType\\.EAGER|@ManyToMany.*fetch\\s*=\\s*FetchType\\.EAGER|\\.toList\\(\\)|\\.Result\\s*=\\s*\\w+\\.ToList\\(\\)",
+      "languages": ["*"],
+      "message": "Potential excessive data exposure — returning full entity",
+      "explanation": "Returning database entities directly to clients exposes all fields, including internal ones like password hashes and timestamps.",
+      "fix": "Use DTOs/projection objects. Return only the fields the client needs. Use @JsonIgnore or @Exclude annotations.",
+      "cwe": "CWE-200"
+    },
+    {
+      "type": "Business Logic: Rate Limit Missing",
+      "severity": "medium",
+      "regex": "for\\s*\\(|while\\s*\\(|forEach|map\\s*\\(|filter\\s*\\(|reduce\\s*\\(",
+      "languages": ["*"],
+      "message": "Loop without rate limiting — DoS risk on external calls",
+      "explanation": "Iterating over collections with external API calls inside the loop can be weaponized. Without rate limiting, an attacker can exhaust upstream APIs.",
+      "fix": "Add rate limiting (express-rate-limit, token bucket). Batch external calls. Use circuit breakers.",
+      "cwe": "CWE-770"
     }
   ]
 }

@@ -188,22 +188,4 @@ def create_provider(provider_type="openai", **kwargs):
         return OpenAICompatibleProvider(**kwargs)
     elif provider_type == "anthropic":
         return AnthropicProvider(**kwargs)
-    elif provider_type == "deepseek-tuned":
-        from .deepseek_tuned import analyze_with_deepseek as _analyze
-        return _DeepSeekTunedProvider()
     return None
-
-
-class _DeepSeekTunedProvider(AIProvider):
-    """Fine-tuned-equivalent DeepSeek security model with 9 embedded patterns."""
-    def analyze(self, code, language, findings): return []
-    def explain(self, finding, code_context=""): 
-        from .deepseek_tuned import analyze_with_deepseek
-        r = analyze_with_deepseek(code_context, "python")
-        if "error" not in r and r.get("findings"):
-            f = r["findings"][0]
-            return f"{f.get('explanation','')}\nFix: {f.get('fix','')}"
-        return finding.get("explanation", "")
-    def health_check(self):
-        from .deepseek_tuned import health_check
-        return health_check()

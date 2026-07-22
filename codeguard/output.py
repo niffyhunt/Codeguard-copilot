@@ -35,7 +35,7 @@ def format_json(findings, scan_path):
     return json.dumps({
         "tool": "CodeGuard",
         "scan_path": scan_path,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "total": len(findings),
         "findings": [f.to_dict() for f in findings],
     }, indent=2)
@@ -74,7 +74,7 @@ def format_sarif(findings, scan_path):
 def format_markdown(findings, scan_path):
     lines = [f"# CodeGuard Scan Report — `{scan_path}`", "",
              f"**Total findings:** {len(findings)}  ",
-             f"**Scanned at:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}", ""]
+             f"**Scanned at:** {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}", ""]
 
     sev_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
     grouped = {}

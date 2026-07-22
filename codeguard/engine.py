@@ -60,15 +60,12 @@ class Finding:
 
 
 class CodeGuardEngine:
-    def __init__(self, patterns_path=None, use_local_model=None):
+    def __init__(self, patterns_path=None):
         self.patterns_path = patterns_path or PATTERNS_PATH
         self.patterns = []
         self.custom_patterns = []
         self._load_patterns()
         self._ast_enabled = True
-        if use_local_model is None:
-            use_local_model = os.environ.get("CODEGUARD_LOCAL_MODEL", "").lower() in ("1", "true", "yes")
-        self._use_local_model = use_local_model
 
     def _is_test_or_generated(self, file_path):
         path = file_path.lower().replace('\\', '/')
@@ -168,7 +165,74 @@ class CodeGuardEngine:
                         ))
 
         # Layer 2: AST analysis (context-aware — all files, test context flagged)
-        if self._ast_enabled and language == "python":
+        if self._ast_enabled:
+            ast_findings = self._run_ast_analysis(language, file_path, code, is_test, lines)
+            findings.extend(ast_findings)
+
+        # Layer 2.5: Secret detection v2 (entropy + structure + context)
+        if not is_test:
+            try:
+                from .secret_detection import scan_file as secret_scan
+                secret_findings = secret_scan(file_path, code, output_format="finding")
+                findings.extend(secret_findings)
+            except ImportError:
+                pass
+            except Exception:
+                pass
+
+        # Layer 3: WraithCore enrichment (optional)
+        if findings:
+            try:
+                from .wraithcore import get_wraithcore
+                wc = get_wraithcore()
+                if wc.is_ready():
+                    findings = self._enrich_with_wraithcore(findings, code, language, file_path)
+            except ImportError:
+                pass
+            except Exception:
+                pass
+
+        return self._deduplicate(findings)
+
+    def _enrich_with_wraithcore(self, findings, code, language, file_path):
+        from .wraithcore import get_wraithcore
+        wc = get_wraithcore()
+        for f in findings:
+            cwe = f.cwe or ""
+            rule = f.rule_id or ""
+            if "CVE" in rule or "CWE" in rule or any(kw in rule.lower() for kw in ["cve", "kev", "exploit"]):
+                try:
+                    result = wc.score_cve(rule, f.message[:300], f.fix)
+                    if result.get("exploited_in_wild"):
+                        f.severity = "critical"
+                        f.message = f"[WRAITHCORE] {f.message}"
+                        f.confidence = "high"
+                except Exception:
+                    pass
+            if f.severity in ("critical", "high") and any(kw in rule.lower() for kw in ["command", "rce", "deserial"]):
+                try:
+                    session = {"src_ip": "unknown", "duration": 0, "commands": [f.message], "downloads": []}
+                    result = wc.classify_attacker(session)
+                    if result.get("attacker_class") in ("interactive_attacker", "ransomware_dropper"):
+                        f.severity = "critical"
+                        f.confidence = "high"
+                except Exception:
+                    pass
+            if "phish" in rule.lower() or "xss" in rule.lower():
+                try:
+                    result = wc.detect_phishing(f.message)
+                    if result.get("is_phishing") and result.get("confidence", 0) > 0.8:
+                        f.severity = "critical"
+                        f.confidence = "high"
+                except Exception:
+                    pass
+        return findings
+
+    def _run_ast_analysis(self, language, file_path, code, is_test, lines):
+        findings = []
+        code_str = code if isinstance(code, str) else code.decode()
+
+        if language == "python":
             try:
                 from .ast_analyzer import PythonASTAnalyzer
                 ast_findings = PythonASTAnalyzer().analyze(file_path, code)
@@ -177,68 +241,84 @@ class CodeGuardEngine:
                     if is_test:
                         confidence = "low"
                         af.message = f"[TEST FILE] {af.message}"
-                    findings.append(Finding(
-                        rule_id=af.rule_id, severity=af.severity,
-                        file_path=file_path, line=af.line, column=af.column,
-                        length=af.length, message=af.message,
-                        explanation=af.explanation, fix=af.fix, cwe=af.cwe,
-                        confidence=confidence,
-                        source=af.source_call, sink=af.sink_call,
-                        dataflow_path=af.dataflow_path, analyzer="ast",
-                    ))
+                    findings.append(self._ast_to_finding(af, file_path, confidence))
             except ImportError:
                 pass
             except Exception:
                 pass
 
-        if language in ("javascript", "typescript", "go", "rust"):
-            try:
-                from .ast_analyzer import GenericASTAnalyzer
-                ast_findings = GenericASTAnalyzer().analyze(file_path, code, language)
-                for af in ast_findings:
-                    confidence = af.confidence
-                    if is_test:
-                        confidence = "low"
-                    findings.append(Finding(
-                        rule_id=af.rule_id, severity=af.severity,
-                        file_path=file_path, line=af.line, column=af.column,
-                        length=af.length, message=af.message,
-                        explanation=af.explanation, fix=af.fix, cwe=af.cwe,
-                        confidence=confidence,
-                        source=af.source_call, sink=af.sink_call, analyzer="ast",
-                    ))
-            except ImportError:
-                pass
-            except Exception:
-                pass
+        ts_lang_map = {
+            "python": "PythonAnalyzer",
+            "javascript": "JSAnalyzer",
+            "typescript": "TypeScriptAnalyzer",
+            "go": "GoAnalyzer",
+            "rust": "RustAnalyzer",
+            "java": "JavaAnalyzer",
+            "php": "PHPAnalyzer",
+            "ruby": "RubyAnalyzer",
+            "csharp": "CSharpAnalyzer",
+            "kotlin": "KotlinAnalyzer",
+        }
 
-        # Layer 3: Fine-tuned model analysis (optional, gated by flag)
-        if self._use_local_model:
+        if language in ts_lang_map:
             try:
-                from .tuned_model import analyze_security
-                result = analyze_security(code, language)
-                if result.get("findings"):
-                    for af in result["findings"]:
+                from .treesitter_ast import (PythonAnalyzer, JSAnalyzer, GoAnalyzer,
+                                              RustAnalyzer, JavaAnalyzer, PHPAnalyzer,
+                                              RubyAnalyzer, CSharpAnalyzer,
+                                              TypeScriptAnalyzer, KotlinAnalyzer,
+                                              LanguageAnalyzer)
+                analyzer_class = eval(ts_lang_map[language])
+                analyzer = analyzer_class()
+                if analyzer.is_available():
+                    ts_results = analyzer.analyze(file_path, code_str)
+                    for r in ts_results:
+                        confidence = "medium"
+                        if is_test:
+                            confidence = "low"
                         findings.append(Finding(
-                            rule_id=af.get("type", "AI: Security Finding"),
-                            severity=af.get("severity", "high"),
-                            file_path=file_path, line=af.get("line", 0) or 1,
-                            column=1, length=0,
-                            message=af.get("explanation", "")[:120],
-                            explanation=af.get("explanation", ""),
-                            fix=af.get("fix", ""),
-                            cwe=af.get("cwe"),
-                            confidence=af.get("confidence", "medium"),
-                            analyzer="ai",
+                            rule_id=r["rule_id"], severity=r["severity"],
+                            file_path=file_path, line=r["line"],
+                            column=r["column"], length=r.get("length", 10),
+                            message=r["message"], explanation=r.get("fix", ""),
+                            fix=r.get("fix", ""), cwe=r.get("cwe"),
+                            confidence=confidence,
+                            source=r.get("source_call"), sink=r.get("sink_call"),
+                            analyzer="tree-sitter",
                         ))
             except ImportError:
                 pass
-            except Exception as e:
-                logger.debug(f"AI model analysis skipped: {e}")
+            except Exception:
+                pass
 
-        return self._deduplicate(findings)
+        try:
+            from .ast_analyzer import GenericASTAnalyzer
+            gen_findings = GenericASTAnalyzer().analyze(file_path, code_str, language)
+            for af in gen_findings:
+                confidence = af.confidence
+                if is_test:
+                    confidence = "low"
+                findings.append(self._ast_to_finding(af, file_path, confidence))
+        except ImportError:
+            pass
+        except Exception:
+            pass
 
-    def scan_directory(self, dir_path, severity_filter=None, exclude_patterns=None):
+        return findings
+
+    def _ast_to_finding(self, af, file_path, confidence):
+        return Finding(
+            rule_id=af.rule_id, severity=af.severity,
+            file_path=file_path, line=af.line, column=af.column,
+            length=af.length, message=af.message,
+            explanation=af.explanation, fix=af.fix, cwe=af.cwe,
+            confidence=confidence,
+            source=af.source_call if hasattr(af, 'source_call') else None,
+            sink=af.sink_call if hasattr(af, 'sink_call') else None,
+            dataflow_path=af.dataflow_path if hasattr(af, 'dataflow_path') else None,
+            analyzer="ast",
+        )
+
+    def scan_directory(self, dir_path, severity_filter=None, exclude_patterns=None, exploitability=False):
         if exclude_patterns is None:
             exclude_patterns = [".git", "node_modules", "__pycache__", "venv", ".venv",
                                "dist", "build", ".next", "out", "target", "vendor", "egg-info"]
@@ -254,7 +334,28 @@ class CodeGuardEngine:
                     file_path = os.path.join(root, fname)
                     findings.extend(self.scan_file(file_path, severity_filter))
 
-        return sorted(findings, key=lambda f: self._severity_order(f.severity))
+        sorted_findings = sorted(findings, key=lambda f: self._severity_order(f.severity))
+
+        if exploitability and sorted_findings:
+            try:
+                from .exploitability import summarize
+                scores_input = []
+                for f in sorted_findings:
+                    line_text = ""
+                    try:
+                        with open(f.file_path) as fp:
+                            line_text = fp.read().split("\n")[f.line - 1] if f.line else ""
+                    except Exception:
+                        pass
+                    scores_input.append((f, line_text))
+                stats = summarize(scores_input)
+                return sorted_findings, stats
+            except ImportError:
+                pass
+            except Exception:
+                pass
+
+        return sorted_findings
 
     def _deduplicate(self, findings):
         seen = set()

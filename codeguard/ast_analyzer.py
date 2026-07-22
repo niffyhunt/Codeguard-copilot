@@ -111,6 +111,23 @@ class PythonASTAnalyzer:
                         results.append((node.lineno, node.col_offset, node))
         return results
 
+    def _is_non_literal_arg(self, arg):
+        if isinstance(arg, pyast.Constant) and isinstance(arg.value, str):
+            return False
+        if isinstance(arg, pyast.BinOp) and isinstance(arg.op, (pyast.Add, pyast.Mod)):
+            return True
+        if isinstance(arg, pyast.JoinedStr):
+            return True
+        if isinstance(arg, pyast.Name):
+            return True
+        if isinstance(arg, pyast.Attribute):
+            return True
+        if isinstance(arg, pyast.Call):
+            return True
+        if isinstance(arg, pyast.Subscript):
+            return True
+        return False
+
     def _detect_sql_injection(self, tree, file_path):
         findings = []
         sql_calls = (self._find_function_calls(tree, 'execute') +
@@ -118,13 +135,14 @@ class PythonASTAnalyzer:
                      self._find_function_calls(tree, 'raw'))
 
         for lineno, col, node in sql_calls:
-            if node.args and self._has_concatenation(node.args[0]):
+            if node.args and self._is_non_literal_arg(node.args[0]):
+                confidence = "high" if self._has_user_input(node.args[0]) else "medium"
                 findings.append(ASTFinding(
                     "SQL Injection (AST)", "critical", file_path, lineno, col, 10,
-                    "SQL query string contains concatenation — SQL injection risk",
-                    "The argument to execute() uses string concatenation or formatting with potential user input. This enables SQL injection.",
+                    "SQL query constructed from variable — SQL injection risk",
+                    "The argument to execute() uses a variable or expression instead of a parameterized query. This enables SQL injection.",
                     "Use parameterized queries: cursor.execute(sql, (param1, param2)). Never concatenate user input into SQL.",
-                    "CWE-89", confidence="high" if self._has_user_input(node.args[0]) else "medium",
+                    "CWE-89", confidence=confidence,
                     sink_call=f"{getattr(node.func, 'attr', '')}()",
                 ))
         return findings
@@ -134,11 +152,11 @@ class PythonASTAnalyzer:
         cmd_funcs = ['system', 'popen', 'call', 'run', 'Popen']
         for func in cmd_funcs:
             for lineno, col, node in self._find_function_calls(tree, func):
-                if node.args and self._has_concatenation(node.args[0]):
+                if node.args and self._is_non_literal_arg(node.args[0]):
                     findings.append(ASTFinding(
                         "Command Injection (AST)", "critical", file_path, lineno, col, 10,
-                        f"subprocess.{func}() with string concatenation — command injection risk",
-                        "Building shell commands with string concatenation enables command injection. Use argument lists.",
+                        f"subprocess.{func}() with non-literal argument — command injection risk",
+                        "Calling shell functions with user-controlled variables enables command injection. Use argument lists.",
                         f"Use subprocess.{func}(['cmd', arg1, arg2]) instead of string building.",
                         "CWE-78", confidence="high",
                         sink_call=f"subprocess.{func}()",
@@ -203,13 +221,13 @@ class PythonASTAnalyzer:
         findings = []
         for lineno, col, node in self._find_function_calls(tree, 'join'):
             for arg in node.args:
-                if isinstance(arg, pyast.BinOp) and isinstance(arg.op, pyast.Add):
+                if self._is_non_literal_arg(arg):
                     findings.append(ASTFinding(
                         "Path Traversal (AST)", "high", file_path, lineno, col, 10,
-                        "os.path.join() with concatenated user input — path traversal risk",
-                        "Concatenating strings inside path.join() allows attackers to escape the intended directory.",
-                        "Validate user input against a whitelist of allowed paths. Never concatenate raw user input into file paths.",
-                        "CWE-22", confidence="medium",
+                        "os.path.join() with non-literal argument — path traversal risk",
+                        "Using user-controlled variables in path operations allows attackers to escape the intended directory via ../ sequences.",
+                        "Validate user input against a whitelist of allowed paths. Use os.path.realpath() to canonicalize.",
+                        "CWE-22", confidence="high",
                         sink_call="os.path.join()",
                     ))
         return findings
