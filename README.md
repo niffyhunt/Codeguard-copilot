@@ -84,29 +84,19 @@ CodeGuard Copilot catches security vulnerabilities **as you code**, not after yo
 
 ## Architecture
 
-```
-Developer Code
-    │
-    ▼
-┌──────────────────────────────────────────────┐
-│           CodeGuard Copilot                   │
-│                                               │
-│  ┌──────────────┐  ┌──────────────┐          │
-│  │  Pattern     │  │  AST / AI     │          │
-│  │  Detection   │  │  Analysis     │          │
-│  │  (regex)     │  │  (Claude/GPT) │          │
-│  │  35+ rules   │  │               │          │
-│  └──────┬───────┘  └──────┬────────┘          │
-│         │                 │                    │
-│         ▼                 ▼                    │
-│  ┌──────────────────────────────────────┐     │
-│  │        Vulnerability Findings         │     │
-│  │  severity · CWE · file · confidence   │     │
-│  └──────────────────┬───────────────────┘     │
-│                     │                          │
-│                     ▼                          │
-│  ┌──────────────────────────────────────┐     │
-│  │       Intelligence Pipeline           │     │
+![Architecture Pipeline](docs/diagram_architecture.png)
+
+### Analysis Pipeline
+
+![Coverage](docs/diagram_coverage.png)
+
+### Exploitability Scoring
+
+![Exploitability Scoring](docs/diagram_exploitability.png)
+
+### Deployment Modes
+
+![Deployment Modes](docs/diagram_deployment.png)
 │  │                                       │     │
 │  │  ┌─────────────┐  ┌────────────────┐  │     │
 │  │  │ Knowledge    │  │ Raven Bridge    │  │     │
