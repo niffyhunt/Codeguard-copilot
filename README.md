@@ -2,12 +2,11 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-0.2.0-purple.svg)
+![Version](https://img.shields.io/badge/version-0.5.0-purple.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![VS Code](https://img.shields.io/badge/VS%20Code-1.80+-007ACC.svg)
-![Patterns](https://img.shields.io/badge/patterns-35+-orange.svg)
-![Raven](https://img.shields.io/badge/Raven-integrated-red.svg)
-![Fine-tuned](https://img.shields.io/badge/finetuned-Qwen2.5--7B-purple.svg)
+![Patterns](https://img.shields.io/badge/patterns-64-blue.svg)
+![Languages](https://img.shields.io/badge/languages-14-orange.svg)
+![WraithCore](https://img.shields.io/badge/WraithCore-Qwen2.5--7B-purple.svg)
 
 **Your AI-Powered Security Guardian — Now Connected to Live Attacker Intelligence**
 
@@ -284,31 +283,27 @@ raven-guard doctor
 
 | Feature | Status |
 |---------|--------|
-| Real-time scanning (17 base patterns) | Prod |
-| AI analysis (Claude/GPT/Groq) | Prod |
-| VS Code Diagnostics + QuickFix | Prod |
-| Status bar + commands + keybindings | Prod |
-| **18 new language patterns (Go/Rust/C++/C#/Ruby)** | **v0.2.0** |
-| **.codeguard.json custom rules** | **v0.2.0** |
-| **GitHub Actions + GitLab CI/CD** | **v0.2.0** |
-| **Security Training Mode** | **v0.2.0** |
-| **Plugin system framework** | **v0.2.0** |
-| **Raven Intelligence Bridge** | **v0.2.0** |
-| **CodeGuard → Raven Threat Feedback** | **v0.2.0** |
-| **Security Knowledge Graph** | **v0.2.0** |
-| **JetBrains IDE scaffolding** | **v0.2.0** |
+| 64 vulnerability patterns across 14 languages | **v0.5.0** |
+| 7 tree-sitter AST analyzers (Python/JS/TS/Go/Rust/Java/PHP/Ruby/C#/Kotlin) | **v0.5.0** |
+| Secret detection v2 (entropy + 20+ structured types) | **v0.5.0** |
+| Exploitability scoring (0-10 with attack vector) | **v0.5.0** |
+| WraithCore-7B fine-tuned model (attacker/phishing/CVE) | **v0.5.0** |
+| WraithCore API server (FastAPI) | **v0.5.0** |
+| Multi-environment gating (--env prod/staging/dev) | **v0.5.0** |
+| Security drift detection (--drift) | **v0.5.0** |
+| Plugin system (--plugin custom analyzers) | **v0.5.0** |
+| HTML/Markdown report export | **v0.5.0** |
+| CLI: SARIF/JSON/HTML/Markdown export | **v0.5.0** |
+| Cross-repo systemic detection (threshold ≥2) | **v0.5.0** |
+| Raven honeypot intelligence bridge | **v0.5.0** |
+| .codeguard.json custom rules | **v0.5.0** |
+| CI/CD GitHub Actions + GitLab | **v0.5.0** |
+| Pre-commit hook support | **v0.5.0** |
+| VS Code extension with QuickFix | **v0.4.0** |
+| Real-time scanning (regex patterns) | Prod |
+| PyPI package: raven-guard | v0.3.2 |
 | VS Code Marketplace publication | Planned |
-| Telemetry dashboard | Planned |
-| Reachability analysis (AST) | v0.3.1 |
-| Multi-language AST (JS/Go/Rust/Python) | v0.3.1 |
-| Fine-tuned Qwen2.5-7B (QLoRA, local GPU) | v0.3.1 |
-| Cross-repo systemic detection (threshold ≥2) | v0.3.1 |
-| Honeypot session classifier (100:1 scanner:threat) | v0.3.1 |
-| Multi-adapter → AttackEvent (Cowrie/Dionaea/HTTP) | v0.3.1 |
-| Tenant isolation (SQLite per-tenant, zero cross-read) | v0.3.1 |
-| HF Router API inference | Prod |
-| Local LoRA model inference (CODEGUARD_LOCAL_MODEL=1) | v0.3.1 |
-| Security drift detection | Research |
+| Telemetry dashboard | Research |
 
 ---
 
@@ -384,7 +379,7 @@ MIT — see LICENSE file.
 
 <div align="center">
 
-**CodeGuard Copilot v0.3.1 — Intelligent Security Ecosystem**
+**CodeGuard Copilot v0.5.0 — Intelligent Security Ecosystem**
 
 Connected to Raven · Powered by attacker intelligence · Built for developers
 
